@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MapPin, Navigation, Compass, Search, Check, AlertCircle } from 'lucide-react';
+import { MapPin, Navigation, Compass, Search, X, Loader2, AlertCircle } from 'lucide-react';
 
 // Custom Marker Icon for QCOM Store Location
 const storeMarkerIcon = L.divIcon({
@@ -42,6 +42,20 @@ interface StoreLocationMapProps {
   onLocationChange: (lat: number, lng: number, formattedAddress?: string) => void;
 }
 
+interface LocationSearchResult {
+  place_id: number;
+  licence: string;
+  osm_type: string;
+  osm_id: number;
+  boundingbox: string[];
+  lat: string;
+  lon: string;
+  display_name: string;
+  class: string;
+  type: string;
+  importance: number;
+}
+
 // MapRecenter component to smooth pan map when lat/lng change from outside or button
 const MapRecenter: React.FC<{ lat: number; lng: number }> = ({ lat, lng }) => {
   const map = useMap();
@@ -72,9 +86,13 @@ export const StoreLocationMap: React.FC<StoreLocationMapProps> = ({
   const [position, setPosition] = useState<[number, number]>([lat, lng]);
   const [isDetecting, setIsDetecting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<LocationSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const [geoError, setGeoError] = useState<string | null>(null);
+  
   const markerRef = useRef<L.Marker | null>(null);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   // Sync external props with internal position state
   useEffect(() => {
@@ -82,6 +100,48 @@ export const StoreLocationMap: React.FC<StoreLocationMapProps> = ({
       setPosition([lat, lng]);
     }
   }, [lat, lng]);
+
+  // Handle clicking outside of dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Live debounced search as seller types
+  useEffect(() => {
+    if (!searchQuery.trim() || searchQuery.length < 3) {
+      setSearchResults([]);
+      setShowDropdown(false);
+      setIsSearching(false);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsSearching(true);
+      setGeoError(null);
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5`
+        );
+        if (response.ok) {
+          const results: LocationSearchResult[] = await response.json();
+          setSearchResults(results);
+          setShowDropdown(results.length > 0);
+        }
+      } catch {
+        // Search error fallback
+      } finally {
+        setIsSearching(false);
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const handleReverseGeocode = async (latitude: number, longitude: number) => {
     try {
@@ -143,33 +203,19 @@ export const StoreLocationMap: React.FC<StoreLocationMapProps> = ({
     );
   };
 
-  const handleSearchLocation = async (e?: React.FormEvent | React.KeyboardEvent | React.MouseEvent) => {
-    if (e) e.preventDefault();
-    if (!searchQuery.trim()) return;
-    setIsSearching(true);
-    setGeoError(null);
+  const handleSelectSearchResult = (result: LocationSearchResult) => {
+    const newLat = Number(parseFloat(result.lat).toFixed(6));
+    const newLng = Number(parseFloat(result.lon).toFixed(6));
+    setPosition([newLat, newLng]);
+    onLocationChange(newLat, newLng, result.display_name);
+    setShowDropdown(false);
+    setSearchQuery(result.display_name.split(',')[0]); // Compact display title
+  };
 
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`
-      );
-      if (response.ok) {
-        const results = await response.json();
-        if (results && results.length > 0) {
-          const first = results[0];
-          const newLat = Number(parseFloat(first.lat).toFixed(6));
-          const newLng = Number(parseFloat(first.lon).toFixed(6));
-          setPosition([newLat, newLng]);
-          onLocationChange(newLat, newLng, first.display_name);
-        } else {
-          setGeoError('No location matching search query. Try dragging the map pin manually.');
-        }
-      }
-    } catch {
-      setGeoError('Location search failed. Please select point on map directly.');
-    } finally {
-      setIsSearching(false);
-    }
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    setSearchResults([]);
+    setShowDropdown(false);
   };
 
   const eventHandlers = useMemo(
@@ -183,38 +229,62 @@ export const StoreLocationMap: React.FC<StoreLocationMapProps> = ({
     <div className="space-y-3">
       {/* Search & GPS Action Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-        <div className="flex-1 flex items-center gap-1.5">
-          <div className="relative flex-1">
+        <div ref={dropdownRef} className="relative flex-1">
+          <div className="relative">
             <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  handleSearchLocation(e);
-                }
+              onFocus={() => {
+                if (searchResults.length > 0) setShowDropdown(true);
               }}
-              placeholder="Search area, landmark, pincode or street..."
-              className="w-full text-xs pl-8 pr-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-white font-medium"
+              placeholder="Search area, landmark, pincode, or street name..."
+              className="w-full text-xs pl-8 pr-8 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-white font-medium"
             />
+            {isSearching ? (
+              <Loader2 className="w-3.5 h-3.5 text-emerald-600 animate-spin absolute right-3 top-1/2 -translate-y-1/2" />
+            ) : searchQuery ? (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="p-1 hover:bg-slate-100 rounded-full absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            ) : null}
           </div>
-          <button
-            type="button"
-            onClick={handleSearchLocation}
-            disabled={isSearching}
-            className="px-3 py-2 bg-slate-900 text-white rounded-xl text-xs font-semibold hover:bg-slate-800 transition-colors shadow-2xs cursor-pointer flex items-center gap-1"
-          >
-            {isSearching ? 'Searching...' : 'Find'}
-          </button>
+
+          {/* Autocomplete Location Results Dropdown (Same as Customer App) */}
+          {showDropdown && searchResults.length > 0 && (
+            <div className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-xl border border-slate-200 shadow-xl z-50 max-h-60 overflow-y-auto divide-y divide-slate-100">
+              {searchResults.map(res => (
+                <button
+                  key={res.place_id}
+                  type="button"
+                  onClick={() => handleSelectSearchResult(res)}
+                  className="w-full p-2.5 text-left hover:bg-emerald-50/70 transition-colors flex items-start gap-2.5 group cursor-pointer"
+                >
+                  <MapPin className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 shrink-0 mt-0.5" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-semibold text-slate-900 group-hover:text-emerald-900 truncate">
+                      {res.display_name.split(',')[0]}
+                    </p>
+                    <p className="text-[11px] text-slate-500 line-clamp-1">
+                      {res.display_name.split(',').slice(1).join(',').trim()}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <button
           type="button"
           onClick={handleDetectLocation}
           disabled={isDetecting}
-          className="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold hover:bg-emerald-100 transition-colors shadow-2xs cursor-pointer"
+          className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold hover:bg-emerald-100 transition-colors shadow-2xs cursor-pointer shrink-0"
         >
           <Navigation className={`w-3.5 h-3.5 text-emerald-600 ${isDetecting ? 'animate-spin' : ''}`} />
           {isDetecting ? 'Detecting GPS...' : 'Use Current GPS'}
@@ -283,3 +353,4 @@ export const StoreLocationMap: React.FC<StoreLocationMapProps> = ({
     </div>
   );
 };
+
