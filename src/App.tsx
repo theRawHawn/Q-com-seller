@@ -10,11 +10,13 @@ import { StoreProvider } from './context/StoreContext';
 import { AppLayout } from './components/layout/AppLayout';
 import { HomeOverview } from './components/home/HomeOverview';
 import { OrderList } from './components/orders/OrderList';
+import { CatalogView } from './components/catalog/CatalogView';
 import { InventoryList } from './components/inventory/InventoryList';
+import { ReturnsView } from './components/returns/ReturnsView';
 import { EarningsView } from './components/earnings/EarningsView';
 import { AnalyticsView } from './components/analytics/AnalyticsView';
 import { StoreSettingsView } from './components/settings/StoreSettingsView';
-import { OrderStatus, ProductStockStatus } from './types/seller';
+import { OrderStatus, ProductStockStatus, ReturnStatus } from './types/seller';
 import { useAuth } from './context/AuthContext';
 import { LoginView } from './components/auth/LoginView';
 
@@ -24,6 +26,7 @@ function SellerAppContent() {
   const [orderFilter, setOrderFilter] = useState<OrderStatus | 'all'>('all');
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [inventoryFilter, setInventoryFilter] = useState<ProductStockStatus | 'ALL'>('ALL');
+  const [returnsFilter, setReturnsFilter] = useState<ReturnStatus | 'ALL'>('ALL');
 
   if (!isAuthenticated) {
     return <LoginView />;
@@ -42,6 +45,12 @@ function SellerAppContent() {
         setInventoryFilter(filter as ProductStockStatus);
       } else {
         setInventoryFilter('ALL');
+      }
+    } else if (tab === 'returns') {
+      if (filter) {
+        setReturnsFilter(filter as ReturnStatus);
+      } else {
+        setReturnsFilter('ALL');
       }
     }
     setActiveTab(tab);
@@ -69,12 +78,14 @@ function SellerAppContent() {
         />
       )}
 
-      {activeTab === 'products' && (
-        <InventoryList initialFilterStatus="ALL" />
-      )}
+      {activeTab === 'products' && <CatalogView />}
 
       {activeTab === 'inventory' && (
         <InventoryList initialFilterStatus={inventoryFilter} />
+      )}
+
+      {activeTab === 'returns' && (
+        <ReturnsView initialFilterStatus={returnsFilter} />
       )}
 
       {activeTab === 'earnings' && <EarningsView />}

@@ -98,12 +98,15 @@ interface StockBadgeProps {
   status: ProductStockStatus;
   count?: number;
   unit?: string;
+  size?: 'sm' | 'md' | 'lg';
 }
 
-export const StockStatusBadge: React.FC<StockBadgeProps> = ({ status, count, unit = 'units' }) => {
+export const StockStatusBadge: React.FC<StockBadgeProps> = ({ status, count, unit = 'units', size = 'md' }) => {
+  const sizeClass = size === 'sm' ? 'text-[11px] px-2 py-0.5' : 'text-xs px-2.5 py-0.5';
+
   if (status === 'OUT_OF_STOCK' || count === 0) {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200">
+      <span className={`inline-flex items-center gap-1.5 rounded-md font-medium bg-rose-50 text-rose-700 border border-rose-200 ${sizeClass}`}>
         <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
         <span>Out of Stock</span>
       </span>
@@ -112,17 +115,57 @@ export const StockStatusBadge: React.FC<StockBadgeProps> = ({ status, count, uni
 
   if (status === 'LOW_STOCK') {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200">
+      <span className={`inline-flex items-center gap-1.5 rounded-md font-medium bg-amber-50 text-amber-800 border border-amber-200 ${sizeClass}`}>
         <AlertTriangle className="w-3 h-3 text-amber-600" />
-        <span>Low Stock · {count} {unit}</span>
+        <span>Low Stock {count !== undefined ? `· ${count} ${unit}` : ''}</span>
       </span>
     );
   }
 
   return (
-    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+    <span className={`inline-flex items-center gap-1.5 rounded-md font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 ${sizeClass}`}>
       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-      <span>In Stock {count !== undefined ? `· ${count}` : ''}</span>
+      <span>In Stock {count !== undefined ? `· ${count} ${unit}` : ''}</span>
     </span>
   );
+};
+
+export const ReturnStatusBadge: React.FC<{ status: 'PENDING_INSPECTION' | 'APPROVED_REFUNDED' | 'REJECTED_DISPUTED' | 'PICKUP_SCHEDULED'; size?: 'sm' | 'md' }> = ({
+  status,
+  size = 'md',
+}) => {
+  const sizeClass = size === 'sm' ? 'text-[11px] px-2 py-0.5' : 'text-xs px-2.5 py-1';
+
+  switch (status) {
+    case 'PENDING_INSPECTION':
+      return (
+        <span className={`inline-flex items-center gap-1.5 rounded-md font-semibold bg-amber-50 text-amber-800 border border-amber-300 ${sizeClass}`}>
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+          <span>Pending Inspection</span>
+        </span>
+      );
+    case 'APPROVED_REFUNDED':
+      return (
+        <span className={`inline-flex items-center gap-1.5 rounded-md font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 ${sizeClass}`}>
+          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+          <span>Refund Approved</span>
+        </span>
+      );
+    case 'REJECTED_DISPUTED':
+      return (
+        <span className={`inline-flex items-center gap-1.5 rounded-md font-semibold bg-rose-50 text-rose-800 border border-rose-200 ${sizeClass}`}>
+          <XCircle className="w-3.5 h-3.5 text-rose-500" />
+          <span>Disputed / Rejected</span>
+        </span>
+      );
+    case 'PICKUP_SCHEDULED':
+      return (
+        <span className={`inline-flex items-center gap-1.5 rounded-md font-semibold bg-blue-50 text-blue-800 border border-blue-200 ${sizeClass}`}>
+          <Truck className="w-3.5 h-3.5 text-blue-600" />
+          <span>Pickup Scheduled</span>
+        </span>
+      );
+    default:
+      return <span className={`inline-flex items-center rounded-md bg-slate-100 text-slate-700 ${sizeClass}`}>{status}</span>;
+  }
 };

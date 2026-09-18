@@ -1,13 +1,15 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
-import { SellerOrder, OrderStatus, SellerNotification } from '../types/seller';
+import { SellerOrder, OrderStatus, SellerNotification, SellerReturnOrder } from '../types/seller';
 import { orderService } from '../services/orderService';
 import { catalogService } from '../services/catalogService';
 import { notificationService } from '../services/notificationService';
+import { returnsService } from '../services/returnsService';
 import { useToast } from './ToastContext';
 import { useAuth } from './AuthContext';
 
 interface StoreContextType {
   orders: SellerOrder[];
+  returns: SellerReturnOrder[];
   isLoadingOrders: boolean;
   activeOrdersCount: number;
   newOrdersCount: number;
@@ -15,6 +17,7 @@ interface StoreContextType {
   packedCount: number;
   lowStockCount: number;
   outOfStockCount: number;
+  pendingReturnsCount: number;
   unreadNotifCount: number;
   notifications: SellerNotification[];
   soundAlertsEnabled: boolean;
@@ -29,12 +32,16 @@ interface StoreContextType {
   markNotificationRead: (id: string) => Promise<void>;
   markAllNotificationsRead: () => Promise<void>;
   updateProductStock: (productId: string, newStock: number) => Promise<void>;
+  approveReturn: (returnId: string, restock?: boolean) => Promise<boolean>;
+  rejectReturn: (returnId: string, reason: string) => Promise<boolean>;
+  restockReturnItems: (returnId: string) => Promise<boolean>;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [orders, setOrders] = useState<SellerOrder[]>([]);
+  const [returns, setReturns] = useState<SellerReturnOrder[]>([]);
   const [notifications, setNotifications] = useState<SellerNotification[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
   const [lowStockCount, setLowStockCount] = useState(2);
@@ -66,14 +73,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const refreshOrders = useCallback(async () => {
     try {
       setIsLoadingOrders(true);
-      const [orderRes, notifRes, prodRes] = await Promise.all([
+      const [orderRes, notifRes, prodRes, retRes] = await Promise.all([
         orderService.getOrders(),
         notificationService.getNotifications(),
         catalogService.getProducts(),
+        returnsService.getReturns(),
       ]);
 
       setOrders(orderRes.data);
       setNotifications(notifRes.data);
+      setReturns(retRes.data);
 
       const low = prodRes.data.filter(p => p.status === 'LOW_STOCK').length;
       const out = prodRes.data.filter(p => p.status === 'OUT_OF_STOCK').length;
@@ -108,6 +117,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const packedCount = useMemo(() => {
     return orders.filter(o => o.status === 'packed').length;
   }, [orders]);
+
+  const pendingReturnsCount = useMemo(() => {
+    return returns.filter(r => r.status === 'PENDING_INSPECTION').length;
+  }, [returns]);
 
   const unreadNotifCount = useMemo(() => {
     return notifications.filter(n => !n.isRead).length;
@@ -163,6 +176,42 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const res = await orderService.rejectOrder(orderId, reason);
       setOrders(prev => prev.map(o => (o.id === orderId ? res.data : o)));
       showToast('Order Rejected', `Order #${res.data.orderNumber} was declined.`, 'warning');
+      return true;
+    } catch (err: any) {
+      showToast('Action Failed', err.message, 'error');
+      return false;
+    }
+  };
+
+  const approveReturn = async (returnId: string, restock: boolean = true): Promise<boolean> => {
+    try {
+      const res = await returnsService.approveReturn(returnId, restock);
+      setReturns(prev => prev.map(r => (r.id === returnId ? res.data : r)));
+      showToast('Return Approved', `Return #${res.data.returnNumber} refund processed.`, 'success');
+      return true;
+    } catch (err: any) {
+      showToast('Action Failed', err.message, 'error');
+      return false;
+    }
+  };
+
+  const rejectReturn = async (returnId: string, reason: string): Promise<boolean> => {
+    try {
+      const res = await returnsService.rejectReturn(returnId, reason);
+      setReturns(prev => prev.map(r => (r.id === returnId ? res.data : r)));
+      showToast('Return Disputed', `Return #${res.data.returnNumber} marked as rejected.`, 'warning');
+      return true;
+    } catch (err: any) {
+      showToast('Action Failed', err.message, 'error');
+      return false;
+    }
+  };
+
+  const restockReturnItems = async (returnId: string): Promise<boolean> => {
+    try {
+      const res = await returnsService.restockReturnItems(returnId);
+      setReturns(prev => prev.map(r => (r.id === returnId ? res.data : r)));
+      showToast('Restocked', `Items restored into warehouse inventory.`, 'success');
       return true;
     } catch (err: any) {
       showToast('Action Failed', err.message, 'error');
@@ -228,6 +277,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     <StoreContext.Provider
       value={{
         orders,
+        returns,
         isLoadingOrders,
         activeOrdersCount,
         newOrdersCount,
@@ -235,6 +285,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         packedCount,
         lowStockCount,
         outOfStockCount,
+        pendingReturnsCount,
         unreadNotifCount,
         notifications,
         soundAlertsEnabled,
@@ -249,6 +300,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         markNotificationRead,
         markAllNotificationsRead,
         updateProductStock,
+        approveReturn,
+        rejectReturn,
+        restockReturnItems,
       }}
     >
       {children}
