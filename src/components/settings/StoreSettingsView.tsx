@@ -164,7 +164,7 @@ export const StoreSettingsView: React.FC = () => {
                 rows={2}
                 value={address}
                 onChange={e => setAddress(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-600 font-medium"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 font-medium text-slate-900 bg-white transition-colors shadow-2xs"
                 required
               />
             </div>
@@ -177,7 +177,7 @@ export const StoreSettingsView: React.FC = () => {
                 type="text"
                 value={locality}
                 onChange={e => setLocality(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 bg-white transition-colors shadow-2xs"
                 required
               />
             </div>
@@ -190,7 +190,7 @@ export const StoreSettingsView: React.FC = () => {
                 type="text"
                 value={city}
                 onChange={e => setCity(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 bg-white transition-colors shadow-2xs"
                 required
               />
             </div>
@@ -203,7 +203,7 @@ export const StoreSettingsView: React.FC = () => {
                 type="text"
                 value={pincode}
                 onChange={e => setPincode(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-mono font-bold focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 font-mono font-bold focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 bg-white transition-colors shadow-2xs"
                 required
               />
             </div>
@@ -216,7 +216,7 @@ export const StoreSettingsView: React.FC = () => {
                 type="text"
                 value={phone}
                 onChange={e => setPhone(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-mono focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 font-mono focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 bg-white transition-colors shadow-2xs"
                 required
               />
             </div>
@@ -239,7 +239,7 @@ export const StoreSettingsView: React.FC = () => {
                 type="text"
                 value={name}
                 onChange={e => setName(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-bold focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 font-bold focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 bg-white transition-colors shadow-2xs"
                 required
               />
             </div>
@@ -252,7 +252,7 @@ export const StoreSettingsView: React.FC = () => {
                 type="text"
                 value={ownerName}
                 onChange={e => setOwnerName(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 bg-white transition-colors shadow-2xs"
                 required
               />
             </div>
@@ -264,7 +264,7 @@ export const StoreSettingsView: React.FC = () => {
               <select
                 value={category}
                 onChange={e => setCategory(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 bg-white focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 transition-colors shadow-2xs font-medium"
               >
                 <option value="Electrical & Plumbing Hardware">Electrical & Plumbing Hardware</option>
                 <option value="Power Tools & Fasteners">Power Tools & Fasteners</option>
@@ -281,7 +281,7 @@ export const StoreSettingsView: React.FC = () => {
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 bg-white transition-colors shadow-2xs"
                 required
               />
             </div>
@@ -295,10 +295,10 @@ export const StoreSettingsView: React.FC = () => {
                   type="text"
                   value={gstin}
                   onChange={e => setGstin(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-mono font-bold focus:outline-none focus:ring-1 focus:ring-emerald-600 uppercase"
+                  className="w-full text-xs p-2.5 rounded-lg border border-slate-200 font-mono font-bold focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 bg-white uppercase transition-colors shadow-2xs"
                   required
                 />
-                <ShieldCheck className="w-4 h-4 text-emerald-600 absolute right-3 top-1/2 -translate-y-1/2" />
+                <ShieldCheck className="w-4 h-4 text-emerald-700 absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
             </div>
 
@@ -311,10 +311,10 @@ export const StoreSettingsView: React.FC = () => {
                   type="text"
                   value={panNumber}
                   onChange={e => setPanNumber(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-mono font-bold focus:outline-none focus:ring-1 focus:ring-emerald-600 uppercase"
+                  className="w-full text-xs p-2.5 rounded-lg border border-slate-200 font-mono font-bold focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 bg-white uppercase transition-colors shadow-2xs"
                   required
                 />
-                <ShieldCheck className="w-4 h-4 text-emerald-600 absolute right-3 top-1/2 -translate-y-1/2" />
+                <ShieldCheck className="w-4 h-4 text-emerald-700 absolute right-3 top-1/2 -translate-y-1/2" />
               </div>
             </div>
           </div>
@@ -327,7 +327,7 @@ export const StoreSettingsView: React.FC = () => {
               <CreditCard className="w-4 h-4 text-emerald-700" />
               <h4 className="text-sm font-bold text-slate-900">Bank Account & Payout Settlement</h4>
             </div>
-            <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-md">
+            <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-md">
               NEFT Verified
             </span>
           </div>
@@ -341,7 +341,7 @@ export const StoreSettingsView: React.FC = () => {
                 type="text"
                 value={accountHolderName}
                 onChange={e => setAccountHolderName(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-600 font-medium"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 bg-white font-medium transition-colors shadow-2xs"
                 required
               />
             </div>
@@ -354,7 +354,7 @@ export const StoreSettingsView: React.FC = () => {
                 type="text"
                 value={bankName}
                 onChange={e => setBankName(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 bg-white transition-colors shadow-2xs"
                 required
               />
             </div>
@@ -367,7 +367,7 @@ export const StoreSettingsView: React.FC = () => {
                 type="text"
                 value={accountNumber}
                 onChange={e => setAccountNumber(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-mono font-bold focus:outline-none focus:ring-1 focus:ring-emerald-600"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 font-mono font-bold focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 bg-white transition-colors shadow-2xs"
                 required
               />
             </div>
@@ -380,7 +380,7 @@ export const StoreSettingsView: React.FC = () => {
                 type="text"
                 value={ifsc}
                 onChange={e => setIfsc(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-mono font-bold focus:outline-none focus:ring-1 focus:ring-emerald-600 uppercase"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 font-mono font-bold focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 bg-white uppercase transition-colors shadow-2xs"
                 required
               />
             </div>
@@ -392,7 +392,7 @@ export const StoreSettingsView: React.FC = () => {
               <select
                 value={accountType}
                 onChange={e => setAccountType(e.target.value as any)}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-1 focus:ring-emerald-600 font-medium"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 bg-white focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 font-medium transition-colors shadow-2xs"
               >
                 <option value="CURRENT">Current Account (Business)</option>
                 <option value="SAVINGS">Savings Account (Proprietor)</option>
@@ -416,7 +416,7 @@ export const StoreSettingsView: React.FC = () => {
               rows={2}
               value={pickupNotes}
               onChange={e => setPickupNotes(e.target.value)}
-              className="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+              className="w-full text-xs p-2.5 rounded-lg border border-slate-200 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 bg-white transition-colors shadow-2xs"
               required
             />
           </div>
@@ -430,7 +430,7 @@ export const StoreSettingsView: React.FC = () => {
                 type="number"
                 value={basePrepMins}
                 onChange={e => setBasePrepMins(Number(e.target.value))}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-mono font-bold"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 font-mono font-bold focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 bg-white shadow-2xs"
                 required
               />
             </div>
@@ -443,7 +443,7 @@ export const StoreSettingsView: React.FC = () => {
                 type="text"
                 value={openTime}
                 onChange={e => setOpenTime(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-mono"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 font-mono focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 bg-white shadow-2xs"
                 required
               />
             </div>
@@ -456,7 +456,7 @@ export const StoreSettingsView: React.FC = () => {
                 type="text"
                 value={closeTime}
                 onChange={e => setCloseTime(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-mono"
+                className="w-full text-xs p-2.5 rounded-lg border border-slate-200 font-mono focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 text-slate-900 bg-white shadow-2xs"
                 required
               />
             </div>

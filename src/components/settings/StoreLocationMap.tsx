@@ -61,6 +61,10 @@ const MapRecenter: React.FC<{ lat: number; lng: number }> = ({ lat, lng }) => {
   const map = useMap();
   useEffect(() => {
     map.flyTo([lat, lng], map.getZoom(), { animate: true });
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 200);
+    return () => clearTimeout(timer);
   }, [lat, lng, map]);
   return null;
 };
@@ -240,34 +244,34 @@ export const StoreLocationMap: React.FC<StoreLocationMapProps> = ({
                 if (searchResults.length > 0) setShowDropdown(true);
               }}
               placeholder="Search area, landmark, pincode, or street name..."
-              className="w-full text-xs pl-8 pr-8 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-white font-medium"
+              className="w-full text-xs pl-8 pr-8 py-2 rounded-lg border border-slate-200 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 bg-white font-medium text-slate-900 transition-colors shadow-2xs"
             />
             {isSearching ? (
-              <Loader2 className="w-3.5 h-3.5 text-emerald-600 animate-spin absolute right-3 top-1/2 -translate-y-1/2" />
+              <Loader2 className="w-3.5 h-3.5 text-emerald-700 animate-spin absolute right-3 top-1/2 -translate-y-1/2" />
             ) : searchQuery ? (
               <button
                 type="button"
                 onClick={handleClearSearch}
-                className="p-1 hover:bg-slate-100 rounded-full absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                className="p-1 hover:bg-slate-100 rounded-full absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
             ) : null}
           </div>
 
-          {/* Autocomplete Location Results Dropdown (Same as Customer App) */}
+          {/* Autocomplete Location Results Dropdown */}
           {showDropdown && searchResults.length > 0 && (
-            <div className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-xl border border-slate-200 shadow-xl z-50 max-h-60 overflow-y-auto divide-y divide-slate-100">
+            <div className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-lg border border-slate-200 shadow-lg z-50 max-h-60 overflow-y-auto divide-y divide-slate-100">
               {searchResults.map(res => (
                 <button
                   key={res.place_id}
                   type="button"
                   onClick={() => handleSelectSearchResult(res)}
-                  className="w-full p-2.5 text-left hover:bg-emerald-50/70 transition-colors flex items-start gap-2.5 group cursor-pointer"
+                  className="w-full p-2.5 text-left hover:bg-slate-50 transition-colors flex items-start gap-2.5 group cursor-pointer"
                 >
-                  <MapPin className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 shrink-0 mt-0.5" />
+                  <MapPin className="w-4 h-4 text-slate-400 group-hover:text-emerald-700 shrink-0 mt-0.5" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-semibold text-slate-900 group-hover:text-emerald-900 truncate">
+                    <p className="text-xs font-semibold text-slate-900 group-hover:text-emerald-950 truncate">
                       {res.display_name.split(',')[0]}
                     </p>
                     <p className="text-[11px] text-slate-500 line-clamp-1">
@@ -284,22 +288,22 @@ export const StoreLocationMap: React.FC<StoreLocationMapProps> = ({
           type="button"
           onClick={handleDetectLocation}
           disabled={isDetecting}
-          className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-semibold hover:bg-emerald-100 transition-colors shadow-2xs cursor-pointer shrink-0"
+          className="inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-lg text-xs font-semibold transition-colors shadow-2xs cursor-pointer shrink-0"
         >
-          <Navigation className={`w-3.5 h-3.5 text-emerald-600 ${isDetecting ? 'animate-spin' : ''}`} />
+          <Navigation className={`w-3.5 h-3.5 text-emerald-700 ${isDetecting ? 'animate-spin' : ''}`} />
           {isDetecting ? 'Detecting GPS...' : 'Use Current GPS'}
         </button>
       </div>
 
       {geoError && (
-        <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-center gap-2">
+        <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 flex items-center gap-2">
           <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
           <span>{geoError}</span>
         </div>
       )}
 
       {/* Interactive Leaflet Map Container */}
-      <div className="relative h-64 sm:h-72 w-full rounded-xl overflow-hidden border border-slate-200 shadow-2xs z-0">
+      <div className="relative h-64 sm:h-72 w-full rounded-lg overflow-hidden border border-slate-200 shadow-2xs z-0 bg-slate-100">
         <MapContainer
           center={position}
           zoom={16}
@@ -322,9 +326,9 @@ export const StoreLocationMap: React.FC<StoreLocationMapProps> = ({
         </MapContainer>
 
         {/* Floating Instruction overlay */}
-        <div className="absolute bottom-2.5 left-2.5 right-2.5 bg-white/95 backdrop-blur-xs border border-slate-200 px-3 py-1.5 rounded-lg text-[11px] text-slate-700 shadow-sm flex items-center justify-between z-10">
+        <div className="absolute bottom-2.5 left-2.5 right-2.5 bg-white/95 backdrop-blur-xs border border-slate-200 px-3 py-1.5 rounded-md text-[11px] text-slate-700 shadow-2xs flex items-center justify-between z-10">
           <span className="flex items-center gap-1.5 font-medium">
-            <Compass className="w-3.5 h-3.5 text-emerald-600" />
+            <Compass className="w-3.5 h-3.5 text-emerald-700" />
             Drag pin or click map to adjust store entrance
           </span>
           <span className="font-mono text-[10px] text-slate-500 hidden sm:inline-block">
@@ -334,20 +338,20 @@ export const StoreLocationMap: React.FC<StoreLocationMapProps> = ({
       </div>
 
       {/* Latitude & Longitude Coordinate Cards */}
-      <div className="grid grid-cols-2 gap-3 text-xs">
-        <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+      <div className="grid grid-cols-2 gap-2.5 text-xs">
+        <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200/90 flex items-center justify-between">
           <div>
             <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block">Latitude</span>
-            <span className="font-mono font-bold text-slate-900 text-sm">{position[0]}</span>
+            <span className="font-mono font-bold text-slate-900 text-xs sm:text-sm">{position[0]}</span>
           </div>
-          <MapPin className="w-4 h-4 text-emerald-600" />
+          <MapPin className="w-4 h-4 text-emerald-700" />
         </div>
-        <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+        <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200/90 flex items-center justify-between">
           <div>
             <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block">Longitude</span>
-            <span className="font-mono font-bold text-slate-900 text-sm">{position[1]}</span>
+            <span className="font-mono font-bold text-slate-900 text-xs sm:text-sm">{position[1]}</span>
           </div>
-          <MapPin className="w-4 h-4 text-emerald-600" />
+          <MapPin className="w-4 h-4 text-emerald-700" />
         </div>
       </div>
     </div>
