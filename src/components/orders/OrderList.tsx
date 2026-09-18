@@ -13,7 +13,6 @@ import {
   CheckCircle2,
   AlertCircle,
   Zap,
-  Lock,
 } from 'lucide-react';
 import { OrderStatusBadge } from '../common/StatusBadge';
 import { Button } from '../common/Button';
@@ -221,36 +220,35 @@ export const OrderList: React.FC<OrderListProps> = ({
                   </div>
 
                   <div className="text-xs text-slate-600">
-                    <div className="flex items-center gap-2">
-                      <p className="font-semibold text-slate-800 truncate">
-                        {order.customer.name}
-                        {order.customer.businessName ? ` (${order.customer.businessName})` : ''}
-                      </p>
-                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded border border-slate-200">
-                        <Lock className="w-2.5 h-2.5 text-slate-400" />
-                        <span>Masked Contact</span>
-                      </span>
-                    </div>
+                    <p className="font-semibold text-slate-800 truncate">
+                      {order.customer.name}
+                      {order.customer.businessName ? ` (${order.customer.businessName})` : ''}
+                    </p>
                     <p className="text-slate-500 truncate mt-0.5 flex items-center gap-1">
                       <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                       <span>{order.jobSite.deliveryLocality || order.jobSite.address}</span>
                     </p>
                   </div>
 
-                  {/* Items Strip */}
-                  <div className="mt-2.5 text-xs text-slate-700 truncate">
-                    <span className="text-slate-400 font-medium mr-1.5">Items:</span>
+                  {/* Items list stacked vertically one below another */}
+                  <div className="mt-2.5 pt-2 border-t border-slate-100 space-y-1">
                     {order.items.map((item, idx) => (
-                      <span key={item.productId || idx}>
-                        {idx > 0 && <span className="text-slate-300 mx-1.5">·</span>}
-                        <span className="font-bold text-slate-900 mr-1">{item.quantity}×</span>
-                        <span>{item.productName}</span>
+                      <div
+                        key={item.productId || idx}
+                        className="flex items-center justify-between gap-2 text-xs text-slate-700"
+                      >
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className="font-mono font-bold text-slate-900 shrink-0">
+                            {item.quantity}×
+                          </span>
+                          <span className="truncate">{item.productName}</span>
+                        </div>
                         {item.binLocation && (
-                          <span className="text-[11px] text-slate-400 font-mono ml-1">
-                            ({item.binLocation.split('•')[0].trim()})
+                          <span className="text-[11px] text-slate-400 font-mono shrink-0">
+                            {item.binLocation.split('•')[0].trim()}
                           </span>
                         )}
-                      </span>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -263,7 +261,7 @@ export const OrderList: React.FC<OrderListProps> = ({
                       size="md"
                       isLoading={processingId === order.id}
                       onClick={e => handleQuickAccept(e, order.id)}
-                      className="w-full sm:w-auto"
+                      className="min-w-[130px] justify-center"
                     >
                       Accept Order
                     </Button>
@@ -273,12 +271,12 @@ export const OrderList: React.FC<OrderListProps> = ({
                     <Button
                       variant="primary"
                       size="md"
+                      icon={<PackageCheck className="w-4 h-4" />}
                       isLoading={processingId === order.id}
                       onClick={e => handleQuickReady(e, order.id)}
-                      className="w-full sm:w-auto"
+                      className="min-w-[130px] justify-center"
                     >
-                      <PackageCheck className="w-4 h-4 mr-1.5" />
-                      <span>Mark as Ready</span>
+                      Mark as Ready
                     </Button>
                   )}
 
@@ -286,12 +284,12 @@ export const OrderList: React.FC<OrderListProps> = ({
                     <Button
                       variant="primary"
                       size="md"
+                      icon={<Truck className="w-4 h-4" />}
                       isLoading={processingId === order.id}
                       onClick={e => handleQuickHandover(e, order.id)}
-                      className="w-full sm:w-auto"
+                      className="min-w-[130px] justify-center"
                     >
-                      <Truck className="w-4 h-4 mr-1.5" />
-                      <span>Hand Over</span>
+                      Hand Over
                     </Button>
                   )}
 

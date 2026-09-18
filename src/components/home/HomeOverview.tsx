@@ -277,31 +277,29 @@ export const HomeOverview: React.FC<HomeOverviewProps> = ({
                     </p>
                   </div>
 
-                  {/* Compact Space-Efficient Item Summary */}
-                  <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between gap-3 text-xs">
-                    <div className="min-w-0 flex-1 truncate text-slate-700">
-                      <span className="text-slate-400 font-medium mr-1.5">Items:</span>
-                      {order.items.map((item, idx) => (
-                        <span key={item.productId || idx}>
-                          {idx > 0 && <span className="text-slate-300 mx-1.5">·</span>}
-                          <span className="font-bold text-slate-900 mr-1">{item.quantity}×</span>
-                          <span>{item.productName}</span>
-                          {item.binLocation && (
-                            <span className="text-[11px] text-slate-400 font-mono ml-1">
-                              ({item.binLocation.split('•')[0].trim()})
-                            </span>
-                          )}
-                        </span>
-                      ))}
-                    </div>
-                    {order.status === 'picking' && (
-                      <span className="text-[11px] font-semibold text-emerald-800 shrink-0 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                        {packedItemsCount}/{totalItemsCount} packed
-                      </span>
-                    )}
+                  {/* Item list stacked vertically one below another */}
+                  <div className="mt-2.5 pt-2 border-t border-slate-100 space-y-1">
+                    {order.items.map((item, idx) => (
+                      <div
+                        key={item.productId || idx}
+                        className="flex items-center justify-between gap-2 text-xs text-slate-700"
+                      >
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className="font-mono font-bold text-slate-900 shrink-0">
+                            {item.quantity}×
+                          </span>
+                          <span className="truncate">{item.productName}</span>
+                        </div>
+                        {item.binLocation && (
+                          <span className="text-[11px] text-slate-400 font-mono shrink-0">
+                            {item.binLocation.split('•')[0].trim()}
+                          </span>
+                        )}
+                      </div>
+                    ))}
                   </div>
 
-                  {/* Actions */}
+                  {/* Actions & Location Footer */}
                   <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between gap-2">
                     <span className="text-xs text-slate-500 flex items-center gap-1 truncate">
                       <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
@@ -315,6 +313,7 @@ export const HomeOverview: React.FC<HomeOverviewProps> = ({
                           size="sm"
                           isLoading={processingOrderId === order.id}
                           onClick={e => handleQuickAccept(e, order.id)}
+                          className="min-w-[110px] justify-center"
                         >
                           Accept Order
                         </Button>
@@ -324,11 +323,12 @@ export const HomeOverview: React.FC<HomeOverviewProps> = ({
                         <Button
                           variant="primary"
                           size="sm"
+                          icon={<PackageCheck className="w-3.5 h-3.5" />}
                           isLoading={processingOrderId === order.id}
                           onClick={e => handleQuickReady(e, order.id)}
+                          className="min-w-[110px] justify-center"
                         >
-                          <PackageCheck className="w-3.5 h-3.5 mr-1" />
-                          <span>Mark Ready</span>
+                          Mark as Ready
                         </Button>
                       )}
 
@@ -336,11 +336,12 @@ export const HomeOverview: React.FC<HomeOverviewProps> = ({
                         <Button
                           variant="primary"
                           size="sm"
+                          icon={<Truck className="w-3.5 h-3.5" />}
                           isLoading={processingOrderId === order.id}
                           onClick={e => handleQuickHandover(e, order.id)}
+                          className="min-w-[110px] justify-center"
                         >
-                          <Truck className="w-3.5 h-3.5 mr-1" />
-                          <span>Hand Over</span>
+                          Hand Over
                         </Button>
                       )}
                     </div>
