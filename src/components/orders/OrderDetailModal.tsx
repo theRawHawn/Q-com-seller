@@ -242,15 +242,62 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             </div>
           )}
 
+          {/* Operational Guidance Callout */}
+          {order.status === 'placed' && (
+            <div className="p-3.5 bg-amber-50/90 rounded-xl border border-amber-300 flex items-start gap-2.5">
+              <div className="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
+                1
+              </div>
+              <div className="text-xs">
+                <p className="font-bold text-amber-950">Review Order Details & Quantities</p>
+                <p className="text-amber-800 mt-0.5">
+                  Verify you have physical stock at the designated warehouse bins before accepting. Once accepted, this order immediately transitions into your <strong>Preparing & Packing checklist</strong>.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {order.status === 'picking' && (
+            <div className="p-3.5 bg-blue-50/90 rounded-xl border border-blue-300 flex items-start justify-between gap-2.5">
+              <div className="flex items-start gap-2.5">
+                <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
+                  2
+                </div>
+                <div className="text-xs">
+                  <p className="font-bold text-blue-950">Step 2: Pack Items into Order Crate</p>
+                  <p className="text-blue-800 mt-0.5">
+                    Pick items from the listed shelf locations and check them off below as you place them into the packing crate.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  order.items.forEach(i => {
+                    if (!i.isPacked) toggleItemPacked(order.id, i.productId, true);
+                  });
+                }}
+                className="text-[11px] font-bold text-blue-700 bg-white hover:bg-blue-100 px-2.5 py-1 rounded-lg border border-blue-200 shrink-0 transition-colors"
+              >
+                Pack All Items
+              </button>
+            </div>
+          )}
+
           {/* Items Checklist with Bin Locations */}
           <div>
             <div className="flex items-center justify-between mb-2.5">
-              <h4 className="text-sm font-bold text-slate-900">
-                Items in Order ({order.items.length})
-              </h4>
+              <div className="flex items-center gap-2">
+                <h4 className="text-sm font-bold text-slate-900">
+                  Items to Pack ({order.items.length})
+                </h4>
+                <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                  {order.items.reduce((acc, i) => acc + i.quantity, 0)} total units
+                </span>
+              </div>
               {order.status === 'picking' && (
-                <span className="text-xs text-slate-500">
-                  Tap checkbox as you pick items into the order crate
+                <span className="text-xs font-semibold text-blue-700">
+                  {order.items.filter(i => i.isPacked).length} of {order.items.length} packed
                 </span>
               )}
             </div>

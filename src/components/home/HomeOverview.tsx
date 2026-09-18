@@ -12,6 +12,13 @@ import {
   PackageCheck,
   ChevronRight,
   ShoppingBag,
+  MapPin,
+  Eye,
+  CheckCircle2,
+  CheckSquare,
+  ShieldCheck,
+  Truck,
+  Sparkles,
 } from 'lucide-react';
 import { OrderStatusBadge } from '../common/StatusBadge';
 import { Button } from '../common/Button';
@@ -36,24 +43,72 @@ export const HomeOverview: React.FC<HomeOverviewProps> = ({
     lowStockCount,
     outOfStockCount,
     acceptOrder,
+    markOrderReady,
+    markOrderHandedOver,
   } = useStore();
 
   const [earnings, setEarnings] = useState<SellerEarningsSummary | null>(null);
   const [processingOrderId, setProcessingOrderId] = useState<string | null>(null);
+  const [activeTabFilter, setActiveTabFilter] = useState<'placed' | 'picking' | 'packed' | 'all'>('placed');
+  const [actionSuccessNotice, setActionSuccessNotice] = useState<{ id: string; message: string } | null>(null);
+
+  // Auto-switch tab if no new orders but preparing orders exist
+  useEffect(() => {
+    if (newOrdersCount === 0 && pickingCount > 0 && activeTabFilter === 'placed') {
+      setActiveTabFilter('picking');
+    }
+  }, [newOrdersCount, pickingCount]);
 
   useEffect(() => {
     financialService.getEarningsSummary().then(res => setEarnings(res.data));
   }, []);
 
-  const pendingAcceptanceOrders = orders.filter(o => o.status === 'placed');
-  const activePreparingOrders = orders.filter(o => o.status === 'picking');
-
   const handleQuickAccept = async (e: React.MouseEvent, orderId: string) => {
     e.stopPropagation();
     setProcessingOrderId(orderId);
-    await acceptOrder(orderId);
-    setProcessingOrderId(null);
+    try {
+      await acceptOrder(orderId);
+      setActionSuccessNotice({
+        id: orderId,
+        message: `Order #${orderId} accepted! Switched to Preparing.`,
+      });
+      setActiveTabFilter('picking');
+      // Automatically open the order detail in packing mode so the seller knows exactly what to pack
+      onSelectOrder(orderId);
+    } finally {
+      setProcessingOrderId(null);
+    }
   };
+
+  const handleQuickReady = async (e: React.MouseEvent, orderId: string) => {
+    e.stopPropagation();
+    setProcessingOrderId(orderId);
+    try {
+      await markOrderReady(orderId);
+      setActionSuccessNotice({
+        id: orderId,
+        message: `Order #${orderId} packed and marked Ready for courier pickup!`,
+      });
+      setActiveTabFilter('packed');
+    } finally {
+      setProcessingOrderId(null);
+    }
+  };
+
+  const handleQuickHandover = async (e: React.MouseEvent, orderId: string) => {
+    e.stopPropagation();
+    setProcessingOrderId(orderId);
+    try {
+      await markOrderHandedOver(orderId);
+    } finally {
+      setProcessingOrderId(null);
+    }
+  };
+
+  const activeOrdersToDisplay = orders.filter(o => {
+    if (activeTabFilter === 'all') return ['placed', 'picking', 'packed'].includes(o.status);
+    return o.status === activeTabFilter;
+  });
 
   return (
     <div className="space-y-6">
@@ -112,12 +167,12 @@ export const HomeOverview: React.FC<HomeOverviewProps> = ({
         </button>
       </section>
 
-      {/* 2. LIVE ACTIVE ORDERS - Clean Admin Tally */}
-      <section id="section-active-orders">
-        <div className="flex items-center justify-between mb-2.5">
+      {/* 2. LIVE ACTIVE ORDERS - Interactive Operational Workspace */}
+      <section id="section-active-orders" className="space-y-3">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-bold text-slate-900">Active Orders</h3>
-            <span className="text-xs font-mono font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+            <h3 className="text-sm font-bold text-slate-900">Active Orders Pipeline</h3>
+            <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
               {newOrdersCount + pickingCount + packedCount}
             </span>
           </div>
@@ -125,104 +180,295 @@ export const HomeOverview: React.FC<HomeOverviewProps> = ({
             onClick={() => onNavigateTab('orders')}
             className="text-xs font-semibold text-emerald-800 hover:text-emerald-950 flex items-center gap-1"
           >
-            <span>View Orders</span>
+            <span>All Orders</span>
             <ArrowRight className="w-3 h-3" />
           </button>
         </div>
 
-        {/* 3 Unified Clean Cards */}
+        {/* Action Success Alert Notification */}
+        {actionSuccessNotice && (
+          <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-900 animate-fadeIn">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span className="font-semibold">{actionSuccessNotice.message}</span>
+            </div>
+            <button
+              onClick={() => setActionSuccessNotice(null)}
+              className="text-emerald-700 hover:text-emerald-900 font-bold px-1.5"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        {/* 3 Interactive Operational Category Cards */}
         <div className="grid grid-cols-3 gap-3">
           <button
-            onClick={() => onNavigateTab('orders', 'placed')}
-            className={`p-3.5 rounded-xl border text-left transition-all bg-white hover:border-slate-300 shadow-2xs ${
-              newOrdersCount > 0 ? 'border-amber-400/90 ring-1 ring-amber-400/30' : 'border-slate-200'
+            onClick={() => setActiveTabFilter('placed')}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer shadow-2xs ${
+              activeTabFilter === 'placed'
+                ? 'bg-amber-50/70 border-amber-400 ring-2 ring-amber-400/30'
+                : 'bg-white hover:border-slate-300 border-slate-200'
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-600">New Orders</span>
-              {newOrdersCount > 0 && <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />}
+              <span className={`text-xs font-bold ${activeTabFilter === 'placed' ? 'text-amber-900' : 'text-slate-600'}`}>
+                1. New Orders
+              </span>
+              {newOrdersCount > 0 && <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />}
             </div>
             <p className="text-2xl font-bold font-mono text-slate-900 mt-2">
               {newOrdersCount}
             </p>
+            <p className="text-[11px] text-slate-500 mt-0.5">
+              {newOrdersCount > 0 ? 'Requires Acceptance' : 'None pending'}
+            </p>
           </button>
 
           <button
-            onClick={() => onNavigateTab('orders', 'picking')}
-            className={`p-3.5 rounded-xl border text-left transition-all bg-white hover:border-slate-300 shadow-2xs ${
-              pickingCount > 0 ? 'border-slate-300' : 'border-slate-200'
+            onClick={() => setActiveTabFilter('picking')}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer shadow-2xs ${
+              activeTabFilter === 'picking'
+                ? 'bg-blue-50/70 border-blue-400 ring-2 ring-blue-400/30'
+                : 'bg-white hover:border-slate-300 border-slate-200'
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-600">Preparing</span>
-              <Clock className="w-3.5 h-3.5 text-slate-400" />
+              <span className={`text-xs font-bold ${activeTabFilter === 'picking' ? 'text-blue-900' : 'text-slate-600'}`}>
+                2. Preparing & Pack
+              </span>
+              <Clock className="w-3.5 h-3.5 text-blue-500" />
             </div>
             <p className="text-2xl font-bold font-mono text-slate-900 mt-2">
               {pickingCount}
             </p>
+            <p className="text-[11px] text-slate-500 mt-0.5">
+              {pickingCount > 0 ? 'Pack items in crate' : 'No active packing'}
+            </p>
           </button>
 
           <button
-            onClick={() => onNavigateTab('orders', 'packed')}
-            className={`p-3.5 rounded-xl border text-left transition-all bg-white hover:border-slate-300 shadow-2xs ${
-              packedCount > 0 ? 'border-slate-300' : 'border-slate-200'
+            onClick={() => setActiveTabFilter('packed')}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer shadow-2xs ${
+              activeTabFilter === 'packed'
+                ? 'bg-emerald-50/70 border-emerald-400 ring-2 ring-emerald-400/30'
+                : 'bg-white hover:border-slate-300 border-slate-200'
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-600">Ready</span>
-              <PackageCheck className="w-3.5 h-3.5 text-slate-400" />
+              <span className={`text-xs font-bold ${activeTabFilter === 'packed' ? 'text-emerald-900' : 'text-slate-600'}`}>
+                3. Ready for Rider
+              </span>
+              <PackageCheck className="w-3.5 h-3.5 text-emerald-600" />
             </div>
             <p className="text-2xl font-bold font-mono text-slate-900 mt-2">
               {packedCount}
             </p>
+            <p className="text-[11px] text-slate-500 mt-0.5">
+              {packedCount > 0 ? 'Awaiting courier pickup' : 'No ready crates'}
+            </p>
           </button>
         </div>
 
-        {/* Priority Urgent Attention List (New Unaccepted Orders) */}
-        {pendingAcceptanceOrders.length > 0 && (
-          <div className="mt-3 space-y-2">
-            {pendingAcceptanceOrders.map(order => (
-              <div
-                key={order.id}
-                onClick={() => onSelectOrder(order.id)}
-                className="p-3.5 rounded-xl bg-white border border-amber-300 hover:border-amber-400 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer shadow-2xs"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-mono font-bold text-xs text-slate-900">
+        {/* Selected Category Order List with Full Item & Bin Details */}
+        <div className="space-y-3">
+          {activeOrdersToDisplay.length === 0 ? (
+            <div className="p-6 rounded-xl bg-white border border-slate-200 text-center">
+              <Boxes className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+              <p className="text-sm font-semibold text-slate-800">
+                {activeTabFilter === 'placed' && 'No new orders awaiting acceptance'}
+                {activeTabFilter === 'picking' && 'No orders currently in packing'}
+                {activeTabFilter === 'packed' && 'No orders waiting for courier pickup'}
+                {activeTabFilter === 'all' && 'No active orders in the pipeline'}
+              </p>
+              <p className="text-xs text-slate-500 mt-1">
+                {activeTabFilter === 'placed'
+                  ? 'New customer orders placed on QCOM will appear here instantly with sound alert.'
+                  : 'Select another tab or view order history.'}
+              </p>
+            </div>
+          ) : (
+            activeOrdersToDisplay.map(order => {
+              const packedItemsCount = order.items.filter(i => i.isPacked).length;
+              const totalItemsCount = order.items.length;
+              const isAllPacked = packedItemsCount === totalItemsCount;
+
+              return (
+                <div
+                  key={order.id}
+                  className={`p-4 rounded-xl bg-white border transition-all shadow-2xs ${
+                    order.status === 'placed'
+                      ? 'border-amber-300 ring-1 ring-amber-400/20'
+                      : order.status === 'picking'
+                      ? 'border-blue-200'
+                      : 'border-emerald-200'
+                  }`}
+                >
+                  {/* Order Top Bar */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100">
+                    <div className="flex items-center gap-2.5 flex-wrap">
+                      <OrderStatusBadge status={order.status} size="md" />
+                      <span className="font-mono font-bold text-sm text-slate-900">
                         #{order.orderNumber}
                       </span>
-                      <span className="text-xs text-slate-400">·</span>
-                      <span className="text-xs text-slate-600">
-                        {order.items.length} items
+                      <span className="text-xs text-slate-400">•</span>
+                      <span className="text-xs font-semibold text-slate-500">
+                        {new Date(order.placedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
-                      <span className="text-xs text-slate-400">·</span>
-                      <span className="text-xs font-mono font-bold text-slate-900">
-                        ₹{order.total.toFixed(0)}
+                      <span className="text-xs text-slate-400">•</span>
+                      <span className="text-xs font-bold text-slate-900 font-mono">
+                        ₹{order.total.toFixed(0)} ({order.paymentMethod})
                       </span>
                     </div>
-                    <p className="text-xs text-slate-500 truncate mt-0.5">
-                      {order.customer.name} {order.jobSite.jobTag ? `· ${order.jobSite.jobTag}` : ''}
-                    </p>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-slate-500 flex items-center gap-1">
+                        <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <span className="font-medium text-slate-700 truncate max-w-[180px]">
+                          {order.jobSite.deliveryLocality || order.jobSite.address}
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Customer / Job Site context */}
+                  <div className="py-2.5 flex items-center justify-between gap-2 text-xs">
+                    <div className="flex items-center gap-2 truncate">
+                      <span className="font-semibold text-slate-800">
+                        Buyer: {order.customer.name}
+                      </span>
+                      {order.jobSite.jobTag && (
+                        <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-medium text-[11px] border border-slate-200">
+                          {order.jobSite.jobTag}
+                        </span>
+                      )}
+                    </div>
+                    {order.status === 'picking' && (
+                      <div className="text-xs font-bold text-blue-700 flex items-center gap-1.5">
+                        <CheckSquare className="w-3.5 h-3.5 text-blue-600" />
+                        <span>Packed: {packedItemsCount} of {totalItemsCount} items</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ITEM DETAILS & WAREHOUSE BINS (Visible before accepting and while packing) */}
+                  <div className="bg-slate-50/90 rounded-xl p-3 border border-slate-200/80 my-2 space-y-2">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                      <span>Items to fulfill ({order.items.reduce((acc, i) => acc + i.quantity, 0)} total units)</span>
+                      <span>Warehouse Bin / Shelf</span>
+                    </div>
+
+                    <div className="space-y-2 divide-y divide-slate-200/60">
+                      {order.items.map((item, idx) => (
+                        <div key={item.productId || idx} className={`pt-2 first:pt-0 flex items-center justify-between gap-3 ${item.isPacked ? 'opacity-70' : ''}`}>
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            {item.image ? (
+                              <img
+                                src={item.image}
+                                alt={item.productName}
+                                className="w-10 h-10 rounded-lg object-cover border border-slate-200 shrink-0 bg-white"
+                              />
+                            ) : (
+                              <div className="w-10 h-10 rounded-lg bg-slate-200 flex items-center justify-center shrink-0">
+                                <Boxes className="w-5 h-5 text-slate-500" />
+                              </div>
+                            )}
+
+                            <div className="min-w-0">
+                              <p className="text-xs font-bold text-slate-900 truncate">
+                                {item.productName}
+                              </p>
+                              <div className="flex items-center gap-2 text-[11px] text-slate-500 flex-wrap">
+                                <span>{item.brand}</span>
+                                {item.unit && <span>• {item.unit}</span>}
+                                <span className="font-mono font-semibold text-slate-700">₹{item.price} each</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-3 shrink-0">
+                            {/* Quantity badge */}
+                            <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 font-mono font-bold text-xs">
+                              {item.quantity} ×
+                            </span>
+
+                            {/* Bin Location */}
+                            <div className="text-right">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded bg-white text-slate-800 border border-slate-200 font-mono text-[11px] font-semibold">
+                                {item.binLocation || 'Aisle 1'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Operational Action Buttons Bar */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onSelectOrder(order.id)}
+                      className="gap-1.5 text-slate-700"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>
+                        {order.status === 'placed'
+                          ? 'Review Full Specs / Trade Notes'
+                          : order.status === 'picking'
+                          ? 'Open Packing Checklist'
+                          : 'View Order Details'}
+                      </span>
+                    </Button>
+
+                    <div className="flex items-center gap-2 justify-end">
+                      {order.status === 'placed' && (
+                        <>
+                          <Button
+                            variant="primary"
+                            size="sm"
+                            isLoading={processingOrderId === order.id}
+                            onClick={e => handleQuickAccept(e, order.id)}
+                            className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
+                          >
+                            <CheckCircle2 className="w-4 h-4 mr-1.5" />
+                            <span>Accept & Start Packing</span>
+                          </Button>
+                        </>
+                      )}
+
+                      {order.status === 'picking' && (
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          isLoading={processingOrderId === order.id}
+                          onClick={e => handleQuickReady(e, order.id)}
+                          className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold"
+                        >
+                          <PackageCheck className="w-4 h-4 mr-1.5" />
+                          <span>Mark as Ready ({packedItemsCount}/{totalItemsCount})</span>
+                        </Button>
+                      )}
+
+                      {order.status === 'packed' && (
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          isLoading={processingOrderId === order.id}
+                          onClick={e => handleQuickHandover(e, order.id)}
+                        >
+                          <Truck className="w-4 h-4 mr-1.5" />
+                          <span>Hand Over to Rider</span>
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
-
-                <div className="shrink-0 flex items-center justify-end">
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    isLoading={processingOrderId === order.id}
-                    onClick={e => handleQuickAccept(e, order.id)}
-                  >
-                    Accept Order
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+              );
+            })
+          )}
+        </div>
       </section>
 
       {/* 3. TODAY'S BUSINESS OVERVIEW - Clean Financial Cards */}
@@ -333,7 +579,7 @@ export const HomeOverview: React.FC<HomeOverviewProps> = ({
             </div>
           )}
 
-          {activePreparingOrders.length > 0 && (
+          {pickingCount > 0 && (
             <div
               onClick={() => onNavigateTab('orders', 'picking')}
               className="p-3.5 rounded-xl bg-white border border-slate-200 hover:border-slate-300 transition-colors flex items-center justify-between gap-3 cursor-pointer shadow-2xs group"
@@ -344,7 +590,7 @@ export const HomeOverview: React.FC<HomeOverviewProps> = ({
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs font-bold text-slate-900">
-                    {activePreparingOrders.length} order in packing
+                    {pickingCount} {pickingCount === 1 ? 'order' : 'orders'} in packing
                   </p>
                   <p className="text-[11px] text-slate-500 truncate">
                     Pack items from warehouse bin and mark ready for courier pickup.
@@ -355,7 +601,7 @@ export const HomeOverview: React.FC<HomeOverviewProps> = ({
             </div>
           )}
 
-          {outOfStockCount === 0 && lowStockCount === 0 && activePreparingOrders.length === 0 && (
+          {outOfStockCount === 0 && lowStockCount === 0 && pickingCount === 0 && (
             <div className="p-4 rounded-xl bg-white border border-slate-200 text-center text-xs text-slate-500">
               All clear. No immediate actions pending.
             </div>
