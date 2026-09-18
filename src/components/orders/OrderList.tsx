@@ -226,7 +226,7 @@ export const OrderList: React.FC<OrderListProps> = ({
                     </p>
                     <p className="text-slate-500 truncate mt-0.5 flex items-center gap-1">
                       <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{order.jobSite.address}</span>
+                      <span>{order.jobSite.deliveryLocality || order.jobSite.address}</span>
                     </p>
                   </div>
 

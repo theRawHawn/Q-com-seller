@@ -167,10 +167,6 @@ class CatalogService {
       timestamp: new Date().toISOString(),
     };
   }
-
-  async createProduct(data: Omit<SellerProduct, 'id' | 'updatedAt' | 'rating' | 'reviewsCount'>): Promise<ApiResponse<SellerProduct>> {
-    return this.addProduct(data);
-  }
 }
 
 export const catalogService = new CatalogService();
