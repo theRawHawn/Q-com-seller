@@ -143,8 +143,8 @@ export const StoreLocationMap: React.FC<StoreLocationMapProps> = ({
     );
   };
 
-  const handleSearchLocation = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSearchLocation = async (e?: React.FormEvent | React.KeyboardEvent | React.MouseEvent) => {
+    if (e) e.preventDefault();
     if (!searchQuery.trim()) return;
     setIsSearching(true);
     setGeoError(null);
@@ -183,25 +183,32 @@ export const StoreLocationMap: React.FC<StoreLocationMapProps> = ({
     <div className="space-y-3">
       {/* Search & GPS Action Bar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-        <form onSubmit={handleSearchLocation} className="flex-1 flex items-center gap-1.5">
+        <div className="flex-1 flex items-center gap-1.5">
           <div className="relative flex-1">
             <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleSearchLocation(e);
+                }
+              }}
               placeholder="Search area, landmark, pincode or street..."
               className="w-full text-xs pl-8 pr-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-600 bg-white font-medium"
             />
           </div>
           <button
-            type="submit"
+            type="button"
+            onClick={handleSearchLocation}
             disabled={isSearching}
             className="px-3 py-2 bg-slate-900 text-white rounded-xl text-xs font-semibold hover:bg-slate-800 transition-colors shadow-2xs cursor-pointer flex items-center gap-1"
           >
             {isSearching ? 'Searching...' : 'Find'}
           </button>
-        </form>
+        </div>
 
         <button
           type="button"
