@@ -36,7 +36,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
       label: 'Orders',
       icon: ShoppingBag,
       badge: newOrdersCount > 0 ? `${newOrdersCount}` : activeOrdersCount > 0 ? `${activeOrdersCount}` : null,
-      badgeColor: newOrdersCount > 0 ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-slate-100 text-slate-700',
+      badgeColor: newOrdersCount > 0 ? 'bg-emerald-600 text-white border-emerald-700 shadow-2xs' : 'bg-amber-500 text-white border-amber-600 shadow-2xs',
     },
     {
       id: 'products',
@@ -49,7 +49,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
       label: 'Returns',
       icon: RotateCcw,
       badge: pendingReturnsCount > 0 ? `${pendingReturnsCount}` : null,
-      badgeColor: 'bg-amber-100 text-amber-800 border-amber-300',
+      badgeColor: 'bg-rose-600 text-white border-rose-700 shadow-2xs',
     },
     {
       id: 'earnings',

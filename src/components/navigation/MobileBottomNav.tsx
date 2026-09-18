@@ -27,7 +27,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
       label: 'Orders',
       icon: ShoppingBag,
       badge: newOrdersCount > 0 ? `${newOrdersCount}` : activeOrdersCount > 0 ? `${activeOrdersCount}` : null,
-      badgeColor: newOrdersCount > 0 ? 'bg-amber-500 text-white' : 'bg-slate-700 text-white',
+      badgeColor: newOrdersCount > 0 ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-white',
     },
     {
       id: 'products',
@@ -40,7 +40,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
       label: 'Returns',
       icon: RotateCcw,
       badge: pendingReturnsCount > 0 ? `${pendingReturnsCount}` : null,
-      badgeColor: 'bg-amber-500 text-white',
+      badgeColor: 'bg-rose-600 text-white',
     },
     {
       id: 'more',

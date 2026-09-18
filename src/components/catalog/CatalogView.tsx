@@ -460,13 +460,6 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
                           </span>
                         )}
                       </div>
-                      <div className="text-[11px] text-slate-500">
-                        {discount > 0 ? (
-                          <span className="text-emerald-700 font-semibold">{discount}% margin</span>
-                        ) : (
-                          <span>Standard MRP</span>
-                        )}
-                      </div>
                     </div>
 
                     {/* Stock Stepper & Edit Action */}

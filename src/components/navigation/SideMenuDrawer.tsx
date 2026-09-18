@@ -76,8 +76,8 @@ export const SideMenuDrawer: React.FC<SideMenuDrawerProps> = ({
           : null,
       badgeClass:
         newOrdersCount > 0
-          ? 'bg-amber-100 text-amber-800 border-amber-300'
-          : 'bg-slate-100 text-slate-700 border-slate-200',
+          ? 'bg-emerald-600 text-white border-emerald-700 shadow-2xs'
+          : 'bg-amber-500 text-white border-amber-600 shadow-2xs',
     },
     {
       id: 'products',
@@ -90,7 +90,7 @@ export const SideMenuDrawer: React.FC<SideMenuDrawerProps> = ({
       label: 'Order Returns',
       icon: RotateCcw,
       badge: pendingReturnsCount > 0 ? `${pendingReturnsCount} New` : null,
-      badgeClass: 'bg-amber-100 text-amber-800 border-amber-300',
+      badgeClass: 'bg-rose-600 text-white border-rose-700 shadow-2xs',
     },
     {
       id: 'earnings',
