@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
-import { SellerOrder, OrderStatus, SellerNotification } from '../types/seller';
+import { SellerOrder, OrderStatus, SellerNotification, SellerReturnOrder } from '../types/seller';
 import { orderService } from '../services/orderService';
 import { catalogService } from '../services/catalogService';
 import { notificationService } from '../services/notificationService';
+import { returnsService } from '../services/returnsService';
 import { useToast } from './ToastContext';
 import { useAuth } from './AuthContext';
 
@@ -15,6 +16,8 @@ interface StoreContextType {
   packedCount: number;
   lowStockCount: number;
   outOfStockCount: number;
+  pendingReturnsCount: number;
+  returns: SellerReturnOrder[];
   unreadNotifCount: number;
   notifications: SellerNotification[];
   soundAlertsEnabled: boolean;
@@ -36,6 +39,7 @@ const StoreContext = createContext<StoreContextType | undefined>(undefined);
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [orders, setOrders] = useState<SellerOrder[]>([]);
   const [notifications, setNotifications] = useState<SellerNotification[]>([]);
+  const [returns, setReturns] = useState<SellerReturnOrder[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
   const [lowStockCount, setLowStockCount] = useState(2);
   const [outOfStockCount, setOutOfStockCount] = useState(2);
@@ -66,14 +70,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const refreshOrders = useCallback(async () => {
     try {
       setIsLoadingOrders(true);
-      const [orderRes, notifRes, prodRes] = await Promise.all([
+      const [orderRes, notifRes, prodRes, returnsRes] = await Promise.all([
         orderService.getOrders(),
         notificationService.getNotifications(),
         catalogService.getProducts(),
+        returnsService.getReturns(),
       ]);
 
       setOrders(orderRes.data);
       setNotifications(notifRes.data);
+      setReturns(returnsRes.data);
 
       const low = prodRes.data.filter(p => p.status === 'LOW_STOCK').length;
       const out = prodRes.data.filter(p => p.status === 'OUT_OF_STOCK').length;
@@ -112,6 +118,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const unreadNotifCount = useMemo(() => {
     return notifications.filter(n => !n.isRead).length;
   }, [notifications]);
+
+  const pendingReturnsCount = useMemo(() => {
+    return returns.filter(r => r.status === 'requested' || r.status === 'pending_inspection').length;
+  }, [returns]);
 
   const acceptOrder = async (orderId: string): Promise<boolean> => {
     try {
@@ -235,6 +245,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         packedCount,
         lowStockCount,
         outOfStockCount,
+        pendingReturnsCount,
+        returns,
         unreadNotifCount,
         notifications,
         soundAlertsEnabled,

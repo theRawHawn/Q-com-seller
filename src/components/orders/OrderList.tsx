@@ -206,7 +206,7 @@ export const OrderList: React.FC<OrderListProps> = ({
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2 mb-1.5">
                     <OrderStatusBadge status={order.status} size="md" />
-                    <span className="font-mono font-bold text-sm text-slate-900">
+                    <span className="font-bold text-sm tabular-nums text-slate-900">
                       #{order.orderNumber}
                     </span>
                     <span className="text-xs text-slate-400">•</span>
@@ -214,7 +214,7 @@ export const OrderList: React.FC<OrderListProps> = ({
                       {new Date(order.placedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                     <span className="text-xs text-slate-400">•</span>
-                    <span className="text-xs font-bold text-emerald-800">
+                    <span className="text-xs font-bold text-emerald-800 tabular-nums">
                       ₹{order.total.toFixed(0)} ({order.paymentMethod})
                     </span>
                   </div>
@@ -238,13 +238,13 @@ export const OrderList: React.FC<OrderListProps> = ({
                         className="flex items-center justify-between gap-2 text-xs text-slate-700"
                       >
                         <div className="flex items-center gap-1.5 min-w-0">
-                          <span className="font-mono font-bold text-slate-900 shrink-0">
+                          <span className="font-bold text-slate-900 tabular-nums shrink-0">
                             {item.quantity}×
                           </span>
                           <span className="truncate">{item.productName}</span>
                         </div>
                         {item.binLocation && (
-                          <span className="text-[11px] text-slate-400 font-mono shrink-0">
+                          <span className="text-[11px] text-slate-500 font-medium shrink-0">
                             {item.binLocation.split('•')[0].trim()}
                           </span>
                         )}

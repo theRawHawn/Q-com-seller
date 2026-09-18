@@ -160,7 +160,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
           </div>
           <div className="mt-2 flex items-baseline gap-1.5">
-            <span className="text-2xl font-bold font-mono text-slate-900">{counts.inStock}</span>
+            <span className="text-2xl font-extrabold tabular-nums text-slate-900">{counts.inStock}</span>
             <span className="text-xs text-slate-500">SKUs</span>
           </div>
         </button>
@@ -178,7 +178,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
           </div>
           <div className="mt-2 flex items-baseline gap-1.5">
-            <span className="text-2xl font-bold font-mono text-amber-700">{counts.lowStock}</span>
+            <span className="text-2xl font-extrabold tabular-nums text-amber-700">{counts.lowStock}</span>
             <span className="text-xs text-slate-500">SKUs</span>
           </div>
         </button>
@@ -196,7 +196,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
             <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
           </div>
           <div className="mt-2 flex items-baseline gap-1.5">
-            <span className="text-2xl font-bold font-mono text-rose-700">{counts.outOfStock}</span>
+            <span className="text-2xl font-extrabold tabular-nums text-rose-700">{counts.outOfStock}</span>
             <span className="text-xs text-slate-500">SKUs</span>
           </div>
         </button>
@@ -283,7 +283,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
                         {product.brand}
                       </span>
                       <span className="text-slate-300">•</span>
-                      <span className="text-xs font-mono text-slate-500">{product.sku}</span>
+                      <span className="text-xs font-semibold tracking-wider text-slate-500">{product.sku}</span>
                     </div>
 
                     <h4 className="text-sm sm:text-base font-bold text-slate-900 leading-snug mt-0.5">
@@ -292,7 +292,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
 
                     {/* Meta tags: Bin, HSN, Tax */}
                     <div className="flex flex-wrap items-center gap-2 mt-2 text-xs text-slate-600">
-                      <span className="inline-flex items-center gap-1 font-mono font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                      <span className="inline-flex items-center gap-1 font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                         <MapPin className="w-3 h-3 text-emerald-600" />
                         <span>{product.binLocation}</span>
                       </span>
@@ -313,12 +313,12 @@ export const InventoryList: React.FC<InventoryListProps> = ({
                 <div className="flex items-center justify-between sm:justify-end gap-4 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100">
                   {/* Pricing Hierarchy */}
                   <div className="text-left sm:text-right">
-                    <p className="text-lg font-black font-mono text-slate-900">
+                    <p className="text-lg font-extrabold tabular-nums text-slate-900">
                       ₹{product.price}
                     </p>
                     <div className="flex items-center gap-1.5 text-xs text-slate-500">
-                      <span className="line-through">₹{product.mrp}</span>
-                      <span className="text-emerald-700 font-bold">
+                      <span className="line-through tabular-nums">₹{product.mrp}</span>
+                      <span className="text-emerald-700 font-bold tabular-nums">
                         ₹{product.mrp - product.price} off
                       </span>
                     </div>

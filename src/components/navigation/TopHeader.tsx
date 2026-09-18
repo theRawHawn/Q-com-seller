@@ -25,8 +25,9 @@ interface TopHeaderProps {
 const tabTitles: Record<string, string> = {
   home: 'Overview',
   orders: 'Orders',
-  products: 'Catalog Management',
-  inventory: 'Inventory',
+  products: 'Catalog & Inventory',
+  returns: 'Order Returns',
+  inventory: 'Catalog & Inventory',
   earnings: 'Earnings & Payouts',
   analytics: 'Analytics',
   settings: 'Store Settings',

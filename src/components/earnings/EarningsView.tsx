@@ -20,7 +20,6 @@ export const EarningsView: React.FC = () => {
   const [earnings, setEarnings] = useState<SellerEarningsSummary | null>(null);
   const [ledger, setLedger] = useState<SellerLedgerEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSettling, setIsSettling] = useState(false);
   const { showToast } = useToast();
 
   const loadData = async () => {
@@ -43,130 +42,117 @@ export const EarningsView: React.FC = () => {
     loadData();
   }, []);
 
-  const handleInstantPayout = async () => {
-    try {
-      setIsSettling(true);
-      const res = await financialService.requestInstantSettlement();
-      showToast('Payout Initiated', res.message, 'success');
-      await loadData();
-    } catch (err: any) {
-      showToast('Payout Error', err.message, 'error');
-    } finally {
-      setIsSettling(false);
-    }
-  };
-
   return (
     <div className="space-y-6">
-      {/* 1. Main Financial Balance Card */}
-      <div className="p-5 sm:p-6 rounded-xl bg-slate-900 text-white shadow-sm border border-slate-800">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* 1. Weekly Payout Summary Command Card */}
+      <div className="p-5 sm:p-6 rounded-xl bg-white border border-slate-200 shadow-2xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-slate-100">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
-              <span>Pending Payable Balance</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <span className="text-emerald-400 font-mono">Auto-Payout: Tomorrow 10:00 AM</span>
+            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+              <Clock className="w-3.5 h-3.5 text-slate-400" />
+              <span>Weekly Payout Cycle</span>
             </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-3xl sm:text-4xl font-black font-mono tracking-tight">
+            <div className="mt-2 flex items-baseline gap-2.5">
+              <span className="text-3xl sm:text-4xl font-extrabold tracking-tight tabular-nums text-slate-900">
                 ₹{earnings?.pendingPayableBalance.toLocaleString() || '18,450'}
               </span>
-              <span className="text-xs text-slate-400">Net after TDS & fees</span>
+              <span className="text-xs font-medium text-slate-500">Net payout after deductions</span>
             </div>
-            <p className="text-xs text-slate-400 mt-1">
-              Beneficiary: HDFC Bank (A/C •••• 8821) · IFSC: HDFC0001224
+            <p className="text-xs text-slate-500 mt-1.5">
+              Settlement Beneficiary: <span className="font-semibold text-slate-700">HDFC Bank (A/C •••• 8821)</span> · IFSC: <span className="font-mono text-slate-600">HDFC0001224</span>
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            <Button
-              variant="primary"
-              size="md"
-              isLoading={isSettling}
-              onClick={handleInstantPayout}
-              disabled={(earnings?.pendingPayableBalance || 0) <= 0}
-              icon={<Zap className="w-4 h-4" />}
-            >
-              Instant Settlement (IMPS)
-            </Button>
+          <div className="flex items-center gap-2 self-start sm:self-center">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-semibold">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              Verified Payout Account
+            </span>
           </div>
         </div>
 
-        {/* Breakdown bar */}
-        <div className="mt-6 pt-5 border-t border-slate-800 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+        {/* Financial Highlights Bar */}
+        <div className="pt-4 grid grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
           <div>
-            <span className="text-slate-400">Gross Sales (Today)</span>
-            <p className="text-base font-bold font-mono text-white mt-0.5">
-              ₹{earnings?.todaySales.toLocaleString()}
+            <span className="text-slate-500 font-medium">Pending Payout</span>
+            <p className="text-lg font-bold tabular-nums text-slate-900 mt-0.5">
+              ₹{(earnings?.pendingPayableBalance ?? 18450).toLocaleString()}
             </p>
           </div>
           <div>
-            <span className="text-slate-400">Monthly Net Earnings</span>
-            <p className="text-base font-bold font-mono text-white mt-0.5">
-              ₹{(earnings?.monthSales ?? 64200).toLocaleString()}
+            <span className="text-slate-500 font-medium">This Week Net Sales</span>
+            <p className="text-lg font-bold tabular-nums text-emerald-800 mt-0.5">
+              ₹{(earnings?.monthSales ? Math.round(earnings.monthSales / 4) : 24850).toLocaleString()}
             </p>
           </div>
           <div>
-            <span className="text-slate-400">Total Settled (FY25-26)</span>
-            <p className="text-base font-bold font-mono text-white mt-0.5">
+            <span className="text-slate-500 font-medium">Monthly Settled</span>
+            <p className="text-lg font-bold tabular-nums text-slate-900 mt-0.5">
               ₹{(earnings?.settledBalance ?? 84200).toLocaleString()}
             </p>
           </div>
           <div>
-            <span className="text-slate-400">TDS Deposited (194O)</span>
-            <p className="text-base font-bold font-mono text-emerald-400 mt-0.5">
-              ₹{(earnings?.tdsDeducted ?? 4862).toLocaleString()}
+            <span className="text-slate-500 font-medium">TDS Deposited (194-O)</span>
+            <p className="text-lg font-bold tabular-nums text-slate-900 mt-0.5">
+              ₹{(earnings?.tdsDeducted ?? 4862.5).toLocaleString()}
             </p>
           </div>
         </div>
       </div>
 
-      {/* 2. Fee Deductions & Tax Compliance Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-        <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Platform Commission</span>
-            <span className="text-xs font-mono font-bold text-slate-700">12.0% Flat</span>
+      {/* 2. Fee Deductions & Tax Compliance */}
+      <div className="space-y-3">
+        <h3 className="text-sm font-bold text-slate-900">Fee Deductions & Tax Compliance</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-slate-500">Platform Commission</span>
+              <span className="text-[10px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.2 rounded border border-slate-200">
+                12.0% Flat
+              </span>
+            </div>
+            <p className="text-xl font-bold tabular-nums text-slate-900 mt-2">
+              ₹{(earnings?.commissionPaid ?? 7704).toLocaleString()}
+            </p>
+            <p className="text-[11px] text-slate-500 mt-1">Covers platform infrastructure & order fulfillment</p>
           </div>
-          <p className="text-lg font-bold font-mono text-slate-900 mt-2">
-            ₹{(earnings?.commissionPaid ?? 7704).toLocaleString()}
-          </p>
-          <p className="text-[11px] text-slate-500 mt-1">Includes cloud gateway & rider dispatching</p>
-        </div>
 
-        <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">TDS u/s 194-O (1%)</span>
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-slate-500">TDS u/s 194-O (1%)</span>
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            </div>
+            <p className="text-xl font-bold tabular-nums text-slate-900 mt-2">
+              ₹{(earnings?.tdsDeducted ?? 4862.5).toLocaleString()}
+            </p>
+            <p className="text-[11px] text-slate-500 mt-1">Reflected in Form 26AS for tax credit claiming</p>
           </div>
-          <p className="text-lg font-bold font-mono text-slate-900 mt-2">
-            ₹{(earnings?.tdsDeducted ?? 4862).toLocaleString()}
-          </p>
-          <p className="text-[11px] text-slate-500 mt-1">Available in Form 26AS for tax credit</p>
-        </div>
 
-        <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500">Refunds / Chargebacks</span>
-            <span className="text-xs font-mono font-bold text-emerald-700">0.00% Rate</span>
+          <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-slate-500">Refunds & Adjustments</span>
+              <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                0.00% Dispute
+              </span>
+            </div>
+            <p className="text-xl font-bold tabular-nums text-slate-900 mt-2">₹0.00</p>
+            <p className="text-[11px] text-emerald-700 font-medium mt-1">No pending deductions or chargebacks</p>
           </div>
-          <p className="text-lg font-bold font-mono text-slate-900 mt-2">₹0.00</p>
-          <p className="text-[11px] text-emerald-700 font-semibold mt-1">Zero disputes this period</p>
         </div>
       </div>
 
-      {/* 3. Operational Settlement Ledger */}
+      {/* 3. Transaction & Settlement Ledger */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-base font-bold text-slate-900">Transaction & Settlement Ledger</h3>
+            <h3 className="text-sm font-bold text-slate-900">Transaction & Settlement Ledger</h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              Auditable itemized record of orders, credits, and bank transfers
+              Auditable itemized record of order earnings and weekly bank payouts
             </p>
           </div>
           <button
-            onClick={() => showToast('Export Started', 'Ledger CSV downloaded for your CA.', 'info')}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold shadow-2xs"
+            onClick={() => showToast('Export Started', 'Ledger CSV downloaded for accounting.', 'info')}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold shadow-2xs cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export CSV</span>
@@ -197,12 +183,12 @@ export const EarningsView: React.FC = () => {
 
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <h4 className="text-sm font-bold text-slate-900 truncate">{entry.title}</h4>
+                      <h4 className="text-xs font-bold text-slate-900 truncate">{entry.title}</h4>
                       <span
-                        className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded ${
+                        className={`text-[10px] font-bold px-1.5 py-0.2 rounded border ${
                           entry.status === 'CLEARED'
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                            : 'bg-amber-50 text-amber-700 border border-amber-200'
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : 'bg-amber-50 text-amber-700 border-amber-200'
                         }`}
                       >
                         {entry.status}
@@ -210,7 +196,7 @@ export const EarningsView: React.FC = () => {
                     </div>
 
                     <p className="text-xs text-slate-500 mt-0.5 truncate">{entry.description}</p>
-                    <div className="flex items-center gap-2 text-[11px] text-slate-400 font-mono mt-1">
+                    <div className="flex items-center gap-2 text-[11px] text-slate-500 font-medium mt-1">
                       <span>{entry.date} · {entry.timestamp}</span>
                       {entry.utrNumber && <span>• UTR: {entry.utrNumber}</span>}
                     </div>
@@ -219,14 +205,14 @@ export const EarningsView: React.FC = () => {
 
                 <div className="text-left sm:text-right shrink-0 pl-12 sm:pl-0">
                   <p
-                    className={`text-base font-black font-mono ${
-                      entry.category === 'CREDIT' ? 'text-emerald-700' : 'text-slate-900'
+                    className={`text-sm sm:text-base font-bold tabular-nums ${
+                      entry.category === 'CREDIT' ? 'text-emerald-800' : 'text-slate-900'
                     }`}
                   >
                     {entry.category === 'CREDIT' ? '+' : '-'}₹{entry.amount.toFixed(2)}
                   </p>
-                  <p className="text-[11px] text-slate-400 font-medium">
-                    {entry.category === 'CREDIT' ? 'Net Order Settlement' : 'Bank IMPS Transfer'}
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    {entry.category === 'CREDIT' ? 'Net Order Settlement' : 'Weekly Bank Payout'}
                   </p>
                 </div>
               </div>

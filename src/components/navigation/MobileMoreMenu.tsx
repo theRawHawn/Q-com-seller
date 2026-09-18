@@ -1,6 +1,8 @@
 import React from 'react';
 import {
   Package,
+  RotateCcw,
+  IndianRupee,
   BarChart3,
   Settings,
   Store,
@@ -57,12 +59,12 @@ export const MobileMoreMenu: React.FC<MobileMoreMenuProps> = ({
         {/* Navigation list */}
         <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden bg-white">
           <button
-            onClick={() => handleSelect('products')}
+            onClick={() => handleSelect('earnings')}
             className="w-full p-3.5 flex items-center justify-between hover:bg-slate-50 text-left transition-colors"
           >
             <div className="flex items-center gap-3">
-              <Package className="w-4 h-4 text-slate-500" />
-              <span className="text-sm font-semibold text-slate-800">Products & Catalog</span>
+              <IndianRupee className="w-4 h-4 text-slate-500" />
+              <span className="text-sm font-semibold text-slate-800">Earnings & Payouts</span>
             </div>
             <ChevronRight className="w-4 h-4 text-slate-400" />
           </button>

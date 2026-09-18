@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, ShoppingBag, Boxes, IndianRupee, Menu } from 'lucide-react';
+import { Home, ShoppingBag, Package, RotateCcw, Menu } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 
 interface MobileBottomNavProps {
@@ -11,8 +11,9 @@ interface MobileBottomNavProps {
 export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   activeTab,
   setActiveTab,
+  onOpenMoreMenu,
 }) => {
-  const { newOrdersCount, activeOrdersCount, lowStockCount } = useStore();
+  const { newOrdersCount, activeOrdersCount, pendingReturnsCount } = useStore();
 
   const navItems = [
     {
@@ -29,17 +30,17 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
       badgeColor: newOrdersCount > 0 ? 'bg-amber-500 text-white' : 'bg-slate-700 text-white',
     },
     {
-      id: 'inventory',
-      label: 'Inventory',
-      icon: Boxes,
-      badge: lowStockCount > 0 ? `${lowStockCount}` : null,
-      badgeColor: 'bg-rose-500 text-white',
+      id: 'products',
+      label: 'Catalog',
+      icon: Package,
+      badge: null,
     },
     {
-      id: 'earnings',
-      label: 'Earnings',
-      icon: IndianRupee,
-      badge: null,
+      id: 'returns',
+      label: 'Returns',
+      icon: RotateCcw,
+      badge: pendingReturnsCount > 0 ? `${pendingReturnsCount}` : null,
+      badgeColor: 'bg-amber-500 text-white',
     },
     {
       id: 'more',
@@ -61,7 +62,13 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           return (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => {
+                if (item.id === 'more' && onOpenMoreMenu) {
+                  onOpenMoreMenu();
+                } else {
+                  setActiveTab(item.id);
+                }
+              }}
               className={`relative flex flex-col items-center justify-center select-none transition-colors ${
                 isActive ? 'text-emerald-700 font-semibold' : 'text-slate-500 hover:text-slate-900 font-medium'
               }`}

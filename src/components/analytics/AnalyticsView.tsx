@@ -61,7 +61,7 @@ export const AnalyticsView: React.FC = () => {
             <span className="text-xs font-semibold text-slate-500">15-Min Prep SLA</span>
             <Award className="w-4 h-4 text-emerald-600" />
           </div>
-          <p className="text-3xl font-bold font-mono tracking-tight text-emerald-700 mt-2">
+          <p className="text-3xl font-extrabold tabular-nums tracking-tight text-emerald-700 mt-2">
             {metrics?.slaAdherencePercent || 98.4}%
           </p>
           <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden mt-3">
@@ -79,7 +79,7 @@ export const AnalyticsView: React.FC = () => {
             <span className="text-xs font-semibold text-slate-500">Avg Store Pick Time</span>
             <Clock className="w-4 h-4 text-blue-600" />
           </div>
-          <p className="text-3xl font-bold font-mono tracking-tight text-slate-900 mt-2">
+          <p className="text-3xl font-extrabold tabular-nums tracking-tight text-slate-900 mt-2">
             {metrics?.avgPreparationMinutes || 4.2} <span className="text-base font-bold text-slate-500">mins</span>
           </p>
           <p className="text-[11px] text-emerald-700 font-semibold mt-3">
@@ -94,7 +94,7 @@ export const AnalyticsView: React.FC = () => {
             <span className="text-xs font-semibold text-slate-500">Merchant Cancellation</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
           </div>
-          <p className="text-3xl font-bold font-mono tracking-tight text-slate-900 mt-2">
+          <p className="text-3xl font-extrabold tabular-nums tracking-tight text-slate-900 mt-2">
             {metrics?.cancellationRatePercent || 0.4}%
           </p>
           <p className="text-[11px] text-emerald-700 font-semibold mt-3">
@@ -111,7 +111,7 @@ export const AnalyticsView: React.FC = () => {
             <h4 className="text-sm font-bold text-slate-900">Today's Hourly Order Velocity</h4>
             <p className="text-xs text-slate-500">Order count distribution across store business hours</p>
           </div>
-          <span className="text-xs font-mono font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg">
+          <span className="text-xs font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg">
             Peak: 11 AM - 1 PM
           </span>
         </div>
@@ -128,8 +128,8 @@ export const AnalyticsView: React.FC = () => {
                   title={`${h.hour}: ${h.orders} orders (₹${h.sales})`}
                 />
               </div>
-              <span className="text-[10px] font-mono text-slate-500 mt-1.5">{h.hour}</span>
-              <span className="text-[11px] font-mono font-bold text-slate-800">{h.orders}</span>
+              <span className="text-[10px] font-medium text-slate-500 mt-1.5">{h.hour}</span>
+              <span className="text-[11px] font-bold tabular-nums text-slate-800">{h.orders}</span>
             </div>
           ))}
         </div>
@@ -142,14 +142,14 @@ export const AnalyticsView: React.FC = () => {
           {metrics?.topProducts.map((p, idx) => (
             <div key={p.id} className="py-3 flex items-center justify-between text-xs">
               <div className="flex items-center gap-3">
-                <span className="w-5 font-mono font-bold text-slate-400 text-center">{idx + 1}</span>
+                <span className="w-5 font-bold tabular-nums text-slate-400 text-center">{idx + 1}</span>
                 <div>
                   <p className="font-bold text-slate-900">{p.name}</p>
                   <p className="text-slate-500 text-[11px] mt-0.5">{p.unitsSold} units delivered today</p>
                 </div>
               </div>
               <div className="text-right">
-                <p className="font-mono font-bold text-slate-900">₹{p.revenue.toLocaleString()}</p>
+                <p className="font-bold tabular-nums text-slate-900">₹{p.revenue.toLocaleString()}</p>
                 <span className="text-emerald-700 font-semibold text-[10px]">High Velocity</span>
               </div>
             </div>

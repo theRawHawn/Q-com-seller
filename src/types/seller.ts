@@ -259,3 +259,52 @@ export interface ApiResponse<T> {
   message?: string;
   timestamp: string;
 }
+
+export type ReturnStatus =
+  | 'requested'
+  | 'pending_inspection'
+  | 'approved'
+  | 'restocked'
+  | 'rejected';
+
+export interface SellerReturnItem {
+  productId: string;
+  productName: string;
+  quantity: number;
+  price: number;
+  refundAmount: number;
+  reason: string;
+  condition: 'UNOPENED' | 'DAMAGED' | 'DEFECTIVE' | 'WRONG_ITEM' | 'CUSTOMER_REFUSED';
+  image?: string;
+  sku?: string;
+  binLocation?: string;
+  customerPhotos?: string[];
+}
+
+export interface SellerReturnOrder {
+  id: string;
+  returnNumber: string;
+  originalOrderId: string;
+  originalOrderNumber: string;
+  customerName: string;
+  customerPhone?: string;
+  requestedAt: string;
+  updatedAt?: string;
+  status: ReturnStatus;
+  items: SellerReturnItem[];
+  totalRefundAmount: number;
+  reasonCategory: 'DAMAGED' | 'WRONG_ITEM' | 'DEFECTIVE' | 'RTO_REFUSED' | 'NOT_NEEDED';
+  reasonDescription: string;
+  customerReasonNote: string;
+  customerPhotos: string[];
+  inspectionPhotos?: string[];
+  rejectionReason?: string;
+  resolutionNote?: string;
+  pickupRider?: {
+    name: string;
+    phone: string;
+    vehicle: string;
+    etaMinutes?: number;
+  };
+  restocked: boolean;
+}

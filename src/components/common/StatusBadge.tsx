@@ -1,6 +1,16 @@
 import React from 'react';
-import { OrderStatus, ProductStockStatus } from '../../types/seller';
-import { Clock, PackageCheck, Truck, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
+import { OrderStatus, ProductStockStatus, ReturnStatus } from '../../types/seller';
+import {
+  Clock,
+  PackageCheck,
+  Truck,
+  CheckCircle2,
+  XCircle,
+  AlertTriangle,
+  RotateCcw,
+  Boxes,
+  ShieldAlert,
+} from 'lucide-react';
 
 interface OrderBadgeProps {
   status: OrderStatus;
@@ -125,4 +135,66 @@ export const StockStatusBadge: React.FC<StockBadgeProps> = ({ status, count, uni
       <span>In Stock {count !== undefined ? `· ${count}` : ''}</span>
     </span>
   );
+};
+
+interface ReturnBadgeProps {
+  status: ReturnStatus;
+  size?: 'sm' | 'md';
+}
+
+export const ReturnStatusBadge: React.FC<ReturnBadgeProps> = ({ status, size = 'md' }) => {
+  const sizeClasses = {
+    sm: 'text-[11px] px-2 py-0.5 gap-1 font-medium',
+    md: 'text-xs px-2.5 py-1 gap-1.5 font-medium',
+  }[size];
+
+  switch (status) {
+    case 'requested':
+    case 'pending_inspection':
+      return (
+        <span
+          id={`badge-return-${status}`}
+          className={`inline-flex items-center rounded-md bg-amber-50 text-amber-800 border border-amber-300 ${sizeClasses}`}
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+          <span>Awaiting Review</span>
+        </span>
+      );
+    case 'restocked':
+      return (
+        <span
+          id={`badge-return-${status}`}
+          className={`inline-flex items-center rounded-md bg-emerald-50 text-emerald-800 border border-emerald-300 ${sizeClasses}`}
+        >
+          <Boxes className="w-3 h-3 text-emerald-600" />
+          <span>Restocked to Shelf</span>
+        </span>
+      );
+    case 'approved':
+      return (
+        <span
+          id={`badge-return-${status}`}
+          className={`inline-flex items-center rounded-md bg-blue-50 text-blue-700 border border-blue-200 ${sizeClasses}`}
+        >
+          <CheckCircle2 className="w-3 h-3 text-blue-600" />
+          <span>Refunded (Written Off)</span>
+        </span>
+      );
+    case 'rejected':
+      return (
+        <span
+          id={`badge-return-${status}`}
+          className={`inline-flex items-center rounded-md bg-rose-50 text-rose-700 border border-rose-200 ${sizeClasses}`}
+        >
+          <ShieldAlert className="w-3 h-3 text-rose-500" />
+          <span>Rejected</span>
+        </span>
+      );
+    default:
+      return (
+        <span className={`inline-flex items-center rounded-md bg-slate-100 text-slate-700 border border-slate-200 ${sizeClasses}`}>
+          {status}
+        </span>
+      );
+  }
 };

@@ -3,7 +3,7 @@ import {
   Home,
   ShoppingBag,
   Package,
-  Boxes,
+  RotateCcw,
   IndianRupee,
   BarChart3,
   Settings,
@@ -22,7 +22,7 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
   setActiveTab,
 }) => {
   const { logout } = useAuth();
-  const { newOrdersCount, activeOrdersCount, lowStockCount } = useStore();
+  const { newOrdersCount, activeOrdersCount, pendingReturnsCount } = useStore();
 
   const primaryNavItems = [
     {
@@ -45,11 +45,11 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
       badge: null,
     },
     {
-      id: 'inventory',
-      label: 'Inventory',
-      icon: Boxes,
-      badge: lowStockCount > 0 ? `${lowStockCount}` : null,
-      badgeColor: 'bg-rose-100 text-rose-800 border-rose-200',
+      id: 'returns',
+      label: 'Returns',
+      icon: RotateCcw,
+      badge: pendingReturnsCount > 0 ? `${pendingReturnsCount}` : null,
+      badgeColor: 'bg-amber-100 text-amber-800 border-amber-300',
     },
     {
       id: 'earnings',

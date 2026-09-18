@@ -277,7 +277,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 <h4 className="text-sm font-bold text-slate-900">
                   Items to Pack ({order.items.length})
                 </h4>
-                <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                <span className="text-xs font-semibold tabular-nums px-2 py-0.5 rounded bg-slate-100 text-slate-700">
                   {order.items.reduce((acc, i) => acc + i.quantity, 0)} total units
                 </span>
               </div>
@@ -322,7 +322,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                       <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs">
                         {item.binLocation && (
                           <>
-                            <span className="inline-flex items-center gap-1 font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded text-[11px]">
+                            <span className="inline-flex items-center gap-1 font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded text-[11px]">
                               <span>Shelf: {item.binLocation.split('•')[0].trim()}</span>
                             </span>
                             <span className="text-slate-300">•</span>
@@ -346,10 +346,10 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                   </div>
 
                   <div className="text-right shrink-0">
-                    <p className="text-sm font-black font-mono text-slate-900">
+                    <p className="text-sm font-bold tabular-nums text-slate-900">
                       {item.quantity} × ₹{item.price}
                     </p>
-                    <p className="text-xs font-mono font-bold text-slate-600 mt-0.5">
+                    <p className="text-xs font-bold tabular-nums text-slate-600 mt-0.5">
                       = ₹{(item.quantity * item.price).toFixed(0)}
                     </p>
                     {item.isPacked && (
@@ -460,42 +460,42 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
           <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs">
             <div className="flex items-center justify-between font-bold text-slate-900 text-sm pb-1 border-b border-slate-200">
               <span>Financial Settlement Breakdown</span>
-              <span className="font-mono text-emerald-700">PAID via {order.paymentMethod}</span>
+              <span className="font-semibold text-emerald-700">PAID via {order.paymentMethod}</span>
             </div>
 
             <div className="flex justify-between text-slate-600 pt-1">
               <span>Items Subtotal:</span>
-              <span className="font-mono font-medium text-slate-900">₹{order.subtotal.toFixed(2)}</span>
+              <span className="font-bold tabular-nums text-slate-900">₹{order.subtotal.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between text-slate-600">
               <span>Applicable GST (CGST + SGST):</span>
-              <span className="font-mono font-medium text-slate-900">₹{order.tax.toFixed(2)}</span>
+              <span className="font-bold tabular-nums text-slate-900">₹{order.tax.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between text-slate-600">
               <span>Handling & Packaging Fee:</span>
-              <span className="font-mono font-medium text-slate-900">₹{order.handlingFee.toFixed(2)}</span>
+              <span className="font-bold tabular-nums text-slate-900">₹{order.handlingFee.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between text-slate-500 pt-1 border-t border-slate-200/60">
               <span>Customer Gross Paid:</span>
-              <span className="font-mono font-semibold text-slate-800">₹{order.total.toFixed(2)}</span>
+              <span className="font-bold tabular-nums text-slate-800">₹{order.total.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between text-slate-500">
               <span>QCOM Marketplace Commission ({order.commissionRatePercent}%):</span>
-              <span className="font-mono font-semibold text-rose-600">-₹{order.commissionAmount.toFixed(2)}</span>
+              <span className="font-bold tabular-nums text-rose-600">-₹{order.commissionAmount.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between text-slate-500">
               <span>Govt TDS u/s 194O (1%):</span>
-              <span className="font-mono font-semibold text-rose-600">-₹{order.tdsAmount.toFixed(2)}</span>
+              <span className="font-bold tabular-nums text-rose-600">-₹{order.tdsAmount.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between font-bold text-slate-900 text-sm pt-2 border-t border-slate-300">
               <span className="text-emerald-800">Net Seller Settlement:</span>
-              <span className="font-mono text-base font-black text-emerald-800">
+              <span className="text-base font-extrabold tabular-nums tracking-tight text-emerald-800">
                 ₹{order.sellerEarnings.toFixed(2)}
               </span>
             </div>

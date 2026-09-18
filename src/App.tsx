@@ -10,7 +10,8 @@ import { StoreProvider } from './context/StoreContext';
 import { AppLayout } from './components/layout/AppLayout';
 import { HomeOverview } from './components/home/HomeOverview';
 import { OrderList } from './components/orders/OrderList';
-import { InventoryList } from './components/inventory/InventoryList';
+import { CatalogView } from './components/catalog/CatalogView';
+import { ReturnsView } from './components/returns/ReturnsView';
 import { EarningsView } from './components/earnings/EarningsView';
 import { AnalyticsView } from './components/analytics/AnalyticsView';
 import { StoreSettingsView } from './components/settings/StoreSettingsView';
@@ -23,7 +24,7 @@ function SellerAppContent() {
   const [activeTab, setActiveTab] = useState<string>('home');
   const [orderFilter, setOrderFilter] = useState<OrderStatus | 'all'>('all');
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
-  const [inventoryFilter, setInventoryFilter] = useState<ProductStockStatus | 'ALL'>('ALL');
+  const [catalogFilter, setCatalogFilter] = useState<ProductStockStatus | 'ALL'>('ALL');
 
   if (!isAuthenticated) {
     return <LoginView />;
@@ -37,14 +38,17 @@ function SellerAppContent() {
         setOrderFilter('all');
       }
       setSelectedOrderId(null);
-    } else if (tab === 'inventory') {
+      setActiveTab('orders');
+    } else if (tab === 'products' || tab === 'inventory') {
       if (filter) {
-        setInventoryFilter(filter as ProductStockStatus);
+        setCatalogFilter(filter as ProductStockStatus);
       } else {
-        setInventoryFilter('ALL');
+        setCatalogFilter('ALL');
       }
+      setActiveTab('products');
+    } else {
+      setActiveTab(tab);
     }
-    setActiveTab(tab);
   };
 
   const handleSelectOrder = (orderId: string) => {
@@ -69,12 +73,15 @@ function SellerAppContent() {
         />
       )}
 
-      {activeTab === 'products' && (
-        <InventoryList initialFilterStatus="ALL" />
+      {(activeTab === 'products' || activeTab === 'inventory') && (
+        <CatalogView
+          initialFilterStatus={catalogFilter}
+          onNavigateTab={handleNavigateFromHome}
+        />
       )}
 
-      {activeTab === 'inventory' && (
-        <InventoryList initialFilterStatus={inventoryFilter} />
+      {activeTab === 'returns' && (
+        <ReturnsView onSelectOrder={handleSelectOrder} />
       )}
 
       {activeTab === 'earnings' && <EarningsView />}
