@@ -115,7 +115,7 @@ export const SellerProfileModal: React.FC<SellerProfileModalProps> = ({
               Settlement Bank Account
             </h5>
             <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
-              Daily Auto-NEFT
+              Weekly Auto-NEFT
             </span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
