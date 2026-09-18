@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Zap,
+  Lock,
 } from 'lucide-react';
 import { OrderStatusBadge } from '../common/StatusBadge';
 import { Button } from '../common/Button';
@@ -220,13 +221,19 @@ export const OrderList: React.FC<OrderListProps> = ({
                   </div>
 
                   <div className="text-xs text-slate-600">
-                    <p className="font-semibold text-slate-800 truncate">
-                      {order.customer.name}
-                      {order.customer.businessName ? ` (${order.customer.businessName})` : ''}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-slate-800 truncate">
+                        {order.customer.name}
+                        {order.customer.businessName ? ` (${order.customer.businessName})` : ''}
+                      </p>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded border border-slate-200">
+                        <Lock className="w-2.5 h-2.5 text-slate-400" />
+                        <span>Masked Contact</span>
+                      </span>
+                    </div>
                     <p className="text-slate-500 truncate mt-0.5 flex items-center gap-1">
                       <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{order.jobSite.address}</span>
+                      <span>{order.jobSite.deliveryLocality || order.jobSite.address}</span>
                     </p>
                   </div>
 

@@ -28,6 +28,7 @@ interface StoreContextType {
   refreshOrders: () => Promise<void>;
   markNotificationRead: (id: string) => Promise<void>;
   markAllNotificationsRead: () => Promise<void>;
+  updateProductStock: (productId: string, newStock: number) => Promise<void>;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -210,6 +211,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     showToast('Sound Alerts', !soundAlertsEnabled ? 'Order audio chime enabled.' : 'Audio chime muted.', 'info');
   };
 
+  const updateProductStock = async (productId: string, newStock: number) => {
+    try {
+      const res = await catalogService.updateStock(productId, newStock);
+      const prodRes = await catalogService.getProducts();
+      setLowStockCount(prodRes.data.filter(p => p.status === 'LOW_STOCK').length);
+      setOutOfStockCount(prodRes.data.filter(p => p.status === 'OUT_OF_STOCK').length);
+      showToast('Inventory Updated', `${res.data.name}: stock set to ${newStock} units.`, 'success');
+    } catch (err: any) {
+      showToast('Inventory Error', err.message, 'error');
+      throw err;
+    }
+  };
+
   return (
     <StoreContext.Provider
       value={{
@@ -234,6 +248,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         refreshOrders,
         markNotificationRead,
         markAllNotificationsRead,
+        updateProductStock,
       }}
     >
       {children}

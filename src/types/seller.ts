@@ -111,14 +111,18 @@ export interface SellerOrder {
   // Customer & Site details
   customer: {
     id?: string;
-    name: string;
+    name: string; // e.g. "Rajesh M." (masked first name + initial)
     phone: string;
+    maskedPhone?: string; // e.g. "+91 98XXX-XX891 (Masked via QCOM IVR)"
+    isMasked?: boolean;
+    virtualProxyNumber?: string;
     accountType?: 'electrician' | 'plumber' | 'contractor' | 'individual';
     businessName?: string;
     gstin?: string;
   };
   jobSite: {
     address: string;
+    deliveryLocality?: string;
     landmark?: string;
     floorUnit?: string;
     gateCode?: string;
