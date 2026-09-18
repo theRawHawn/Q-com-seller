@@ -91,15 +91,15 @@ export const SellerProfileModal: React.FC<SellerProfileModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
             <div>
               <span className="text-slate-500">GSTIN</span>
-              <p className="font-mono font-bold text-slate-800 mt-0.5">{currentStore.gstin}</p>
+              <p className="font-semibold text-slate-800 mt-0.5">{currentStore.gstin}</p>
             </div>
             <div>
               <span className="text-slate-500">PAN</span>
-              <p className="font-mono font-bold text-slate-800 mt-0.5">{currentStore.panNumber}</p>
+              <p className="font-semibold text-slate-800 mt-0.5">{currentStore.panNumber}</p>
             </div>
             <div>
               <span className="text-slate-500">Registered Phone</span>
-              <p className="font-mono text-slate-800 mt-0.5">{currentStore.phone}</p>
+              <p className="font-semibold text-slate-800 mt-0.5">{currentStore.phone}</p>
             </div>
             <div>
               <span className="text-slate-500">Merchant Email</span>
@@ -125,13 +125,13 @@ export const SellerProfileModal: React.FC<SellerProfileModalProps> = ({
             </div>
             <div>
               <span className="text-slate-500">Account Number</span>
-              <p className="font-mono font-medium text-slate-800 mt-0.5">
+              <p className="font-semibold text-slate-800 mt-0.5">
                 •••• •••• {currentStore.bankAccount.accountNumber.slice(-4)}
               </p>
             </div>
             <div>
               <span className="text-slate-500">IFSC Code</span>
-              <p className="font-mono font-medium text-slate-800 mt-0.5">{currentStore.bankAccount.ifsc}</p>
+              <p className="font-semibold text-slate-800 mt-0.5">{currentStore.bankAccount.ifsc}</p>
             </div>
             <div>
               <span className="text-slate-500">Account Holder</span>
