@@ -238,17 +238,16 @@ export const OrderList: React.FC<OrderListProps> = ({
                   </div>
 
                   {/* Items Strip */}
-                  <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                    {order.items.map(item => (
-                      <span
-                        key={item.productId}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-700"
-                      >
-                        <span className="font-mono font-bold text-slate-900">{item.quantity}×</span>
-                        <span className="truncate max-w-[140px] sm:max-w-[200px]">{item.productName}</span>
+                  <div className="mt-2.5 text-xs text-slate-700 truncate">
+                    <span className="text-slate-400 font-medium mr-1.5">Items:</span>
+                    {order.items.map((item, idx) => (
+                      <span key={item.productId || idx}>
+                        {idx > 0 && <span className="text-slate-300 mx-1.5">·</span>}
+                        <span className="font-bold text-slate-900 mr-1">{item.quantity}×</span>
+                        <span>{item.productName}</span>
                         {item.binLocation && (
-                          <span className="font-mono text-[10px] text-emerald-700 font-semibold">
-                            [{item.binLocation.split('•')[0].trim()}]
+                          <span className="text-[11px] text-slate-400 font-mono ml-1">
+                            ({item.binLocation.split('•')[0].trim()})
                           </span>
                         )}
                       </span>

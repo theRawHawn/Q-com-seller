@@ -474,7 +474,6 @@ export const INITIAL_ORDERS: SellerOrder[] = [
       siteContactName: 'Rajesh M.',
       sitePhone: '+91 98XXX-XX891',
       tradeType: 'Plumber',
-      jobTag: 'Emergency Bath Remodel Line Leak',
       coordinates: { lat: 12.9365, lng: 77.6255 },
     },
     rider: {
@@ -576,7 +575,6 @@ export const INITIAL_ORDERS: SellerOrder[] = [
       siteContactName: 'Santosh K.',
       sitePhone: '+91 98XXX-XX910',
       tradeType: 'Electrician',
-      jobTag: 'Substation DB Upgrade',
       coordinates: { lat: 12.9340, lng: 77.6290 },
     },
     rider: {
@@ -661,7 +659,6 @@ export const INITIAL_ORDERS: SellerOrder[] = [
       siteContactName: 'Praveen G.',
       sitePhone: '+91 97XXX-XX820',
       tradeType: 'Fabricator',
-      jobTag: 'Mezzanine Structure Welding',
       coordinates: { lat: 12.9312, lng: 77.6210 },
     },
     rider: {
@@ -794,7 +791,6 @@ export const INITIAL_ORDERS: SellerOrder[] = [
       siteContactName: 'Ramesh N.',
       sitePhone: '+91 98XXX-XX200',
       tradeType: 'Fabricator',
-      jobTag: 'Solar Canopy Mounting',
       coordinates: { lat: 12.8420, lng: 77.6790 },
     },
     deliveryOtp: '6019',

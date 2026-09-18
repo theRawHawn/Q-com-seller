@@ -242,33 +242,19 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             </div>
           )}
 
-          {/* Operational Guidance Callout */}
+          {/* Operational Guidance */}
           {order.status === 'placed' && (
-            <div className="p-3.5 bg-amber-50/90 rounded-xl border border-amber-300 flex items-start gap-2.5">
-              <div className="w-5 h-5 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
-                1
-              </div>
-              <div className="text-xs">
-                <p className="font-bold text-amber-950">Review Order Details & Quantities</p>
-                <p className="text-amber-800 mt-0.5">
-                  Verify you have physical stock at the designated warehouse bins before accepting. Once accepted, this order immediately transitions into your <strong>Preparing & Packing checklist</strong>.
-                </p>
-              </div>
+            <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900">
+              <span className="font-bold">Review Items & Shelf Locations: </span>
+              <span>Verify stock before accepting. Once accepted, items can be checked off in the packing checklist below.</span>
             </div>
           )}
 
           {order.status === 'picking' && (
-            <div className="p-3.5 bg-blue-50/90 rounded-xl border border-blue-300 flex items-start justify-between gap-2.5">
-              <div className="flex items-start gap-2.5">
-                <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
-                  2
-                </div>
-                <div className="text-xs">
-                  <p className="font-bold text-blue-950">Step 2: Pack Items into Order Crate</p>
-                  <p className="text-blue-800 mt-0.5">
-                    Pick items from the listed shelf locations and check them off below as you place them into the packing crate.
-                  </p>
-                </div>
+            <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between gap-3 text-xs text-slate-700">
+              <div>
+                <span className="font-bold text-slate-900">Packing in progress: </span>
+                <span>Check off items below as they are placed into the order crate.</span>
               </div>
               <button
                 type="button"
@@ -277,7 +263,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     if (!i.isPacked) toggleItemPacked(order.id, i.productId, true);
                   });
                 }}
-                className="text-[11px] font-bold text-blue-700 bg-white hover:bg-blue-100 px-2.5 py-1 rounded-lg border border-blue-200 shrink-0 transition-colors"
+                className="text-[11px] font-semibold text-slate-700 bg-white hover:bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 shrink-0 transition-colors cursor-pointer"
               >
                 Pack All Items
               </button>
@@ -334,15 +320,18 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                       </h5>
 
                       <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs">
-                        <span className="inline-flex items-center gap-1 font-mono font-bold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded">
-                          <MapPin className="w-3 h-3 text-emerald-700" />
-                          <span>{item.binLocation}</span>
-                        </span>
-                        <span className="text-slate-400">•</span>
+                        {item.binLocation && (
+                          <>
+                            <span className="inline-flex items-center gap-1 font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded text-[11px]">
+                              <span>Shelf: {item.binLocation.split('•')[0].trim()}</span>
+                            </span>
+                            <span className="text-slate-300">•</span>
+                          </>
+                        )}
                         <span className="text-slate-500">HSN: {item.hsnCode}</span>
-                        <span className="text-slate-400">•</span>
+                        <span className="text-slate-300">•</span>
                         <span className="text-slate-500">GST: {item.gstRatePercent}%</span>
-                        <span className="text-slate-400">•</span>
+                        <span className="text-slate-300">•</span>
                         <button
                           type="button"
                           onClick={() => handleOpenStockModal(item)}
@@ -366,7 +355,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     {item.isPacked && (
                       <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 mt-1">
                         <CheckCircle2 className="w-3 h-3" />
-                        <span>Picked</span>
+                        <span>Packed</span>
                       </span>
                     )}
                   </div>
@@ -405,11 +394,6 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                     <span>{order.jobSite.deliveryLocality || 'Dispatch Locality'}</span>
                   </div>
                   <p className="text-[11px] text-slate-500 pl-5 leading-relaxed">{order.jobSite.address}</p>
-                  {order.jobSite.jobTag && (
-                    <p className="text-[11px] text-slate-600 pl-5 font-medium">
-                      Site Note: {order.jobSite.jobTag}
-                    </p>
-                  )}
                 </div>
 
                 {order.customer.gstin && (

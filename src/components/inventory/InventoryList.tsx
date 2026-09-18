@@ -397,17 +397,16 @@ export const InventoryList: React.FC<InventoryListProps> = ({
             <div className="grid grid-cols-2 gap-3.5">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Warehouse Bin Location
+                  Shelf / Rack Location (Optional)
                 </label>
                 <input
                   type="text"
-                  value={editingProduct.binLocation}
+                  value={editingProduct.binLocation || ''}
                   onChange={e =>
                     setEditingProduct({ ...editingProduct, binLocation: e.target.value })
                   }
                   className="w-full text-sm p-2.5 rounded-xl border border-slate-300 font-mono"
-                  placeholder="e.g. Aisle D2 • Bay 01"
-                  required
+                  placeholder="e.g. Shelf A / Rack 2 (optional)"
                 />
               </div>
 
@@ -475,7 +474,7 @@ export const InventoryList: React.FC<InventoryListProps> = ({
                 unit: 'Piece',
                 status: stockCount > 5 ? 'IN_STOCK' : stockCount > 0 ? 'LOW_STOCK' : 'OUT_OF_STOCK',
                 inStock: stockCount > 0,
-                binLocation: binLocation || 'Aisle B1 • Shelf 01',
+                binLocation: binLocation || '',
                 imageUrl: 'https://images.unsplash.com/photo-1581783898377-1c85bf937427?w=200&auto=format&fit=crop&q=80',
                 image: 'https://images.unsplash.com/photo-1581783898377-1c85bf937427?w=200&auto=format&fit=crop&q=80',
                 sku: `SKU-${Date.now().toString().slice(-5)}`,
@@ -568,14 +567,13 @@ export const InventoryList: React.FC<InventoryListProps> = ({
 
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Store Bin Location
+              Shelf / Rack Location (Optional)
             </label>
             <input
               name="sku_bin"
               type="text"
-              placeholder="e.g. Aisle E2 • Rack 04"
+              placeholder="e.g. Shelf A / Rack 2 (optional)"
               className="w-full text-sm p-2.5 rounded-xl border border-slate-300 font-mono"
-              required
             />
           </div>
 

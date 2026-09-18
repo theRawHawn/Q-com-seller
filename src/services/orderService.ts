@@ -248,7 +248,6 @@ class OrderService {
         siteContactName: 'Arun V.',
         sitePhone: '+91 98XXX-XX209',
         tradeType: 'Contractor',
-        jobTag: 'Fast Track Commercial Rewiring',
         coordinates: { lat: 12.937, lng: 77.621 },
       },
       rider: {
