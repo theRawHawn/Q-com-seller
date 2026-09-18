@@ -63,6 +63,8 @@ export interface SellerStore {
   rating: number;
   reviewsCount: number;
   basePrepMins: number;
+  minOrderValue?: number;
+  autoAcceptOrders?: boolean;
   slaAdherencePercent: number;
   joinedDate: string;
   documents: VerificationDocuments;

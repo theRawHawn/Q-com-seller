@@ -265,7 +265,6 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
             <p className="text-2xl font-bold font-mono text-slate-900 mt-2">
               {counts.total}
             </p>
-            <p className="text-[11px] text-slate-500 mt-0.5">All active catalog items</p>
           </button>
 
           <button

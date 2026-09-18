@@ -146,9 +146,6 @@ export const EarningsView: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-sm font-bold text-slate-900">Transaction & Settlement Ledger</h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Auditable itemized record of order earnings and weekly bank payouts
-            </p>
           </div>
           <button
             onClick={() => showToast('Export Started', 'Ledger CSV downloaded for accounting.', 'info')}

@@ -275,7 +275,6 @@ export const ReturnsView: React.FC<ReturnsViewProps> = ({ onSelectOrder }) => {
             <p className="text-2xl font-bold font-mono text-slate-900 mt-2">
               {counts.approved}
             </p>
-            <p className="text-[11px] text-slate-500 mt-0.5">Damaged / transit scrap</p>
           </button>
 
           <button
@@ -293,7 +292,6 @@ export const ReturnsView: React.FC<ReturnsViewProps> = ({ onSelectOrder }) => {
             <p className="text-2xl font-bold font-mono text-slate-900 mt-2">
               ₹{counts.totalRefunded.toLocaleString()}
             </p>
-            <p className="text-[11px] text-slate-500 mt-0.5">{counts.total} lifetime returns (0.6% rate)</p>
           </button>
         </div>
       </section>

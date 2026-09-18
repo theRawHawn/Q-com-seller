@@ -30,10 +30,7 @@ export const AnalyticsView: React.FC = () => {
       {/* Time Period Selector Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-bold text-slate-900">Performance & Fulfillment SLA</h3>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Operational speed benchmarks and commerce velocity
-          </p>
+          <h3 className="text-sm font-bold text-slate-900">Performance & Fulfillment SLA</h3>
         </div>
 
         <div className="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200">
