@@ -490,15 +490,17 @@ export const INITIAL_ORDERS: SellerOrder[] = [
     paymentMethod: 'Instant UPI',
     paymentStatus: 'PAID',
     clientInvoiceNeeded: true,
+    slaTargetMinutes: 3,
     notes: ['Customer requires urgent delivery to avoid site water cutoff.'],
   },
   {
     id: 'ORD-2026-884129',
     orderNumber: 'Q-884129',
     status: 'picking',
-    placedAt: new Date(Date.now() - 7 * 60 * 1000).toISOString(), // 7 mins ago
-    estimatedDeliveryAt: new Date(Date.now() + 8 * 60 * 1000).toISOString(),
-    preparationStartTime: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+    placedAt: new Date(Date.now() - 3 * 60 * 1000).toISOString(), // 3 mins ago
+    estimatedDeliveryAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+    preparationStartTime: new Date(Date.now() - 75 * 1000).toISOString(), // Started 1m 15s ago, 1m 45s left of 3m SLA
+    slaTargetMinutes: 3,
     subtotal: 780,
     tax: 140.4,
     deliveryFee: 0,
@@ -596,10 +598,11 @@ export const INITIAL_ORDERS: SellerOrder[] = [
     id: 'ORD-2026-773105',
     orderNumber: 'Q-773105',
     status: 'packed',
-    placedAt: new Date(Date.now() - 14 * 60 * 1000).toISOString(),
-    estimatedDeliveryAt: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
-    preparationStartTime: new Date(Date.now() - 12 * 60 * 1000).toISOString(),
-    packedTime: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
+    placedAt: new Date(Date.now() - 8 * 60 * 1000).toISOString(),
+    estimatedDeliveryAt: new Date(Date.now() + 6 * 60 * 1000).toISOString(),
+    preparationStartTime: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+    packedTime: new Date(Date.now() - 2.8 * 60 * 1000).toISOString(), // Packed in 2m 12s
+    slaTargetMinutes: 3,
     subtotal: 256,
     tax: 46.08,
     deliveryFee: 0,

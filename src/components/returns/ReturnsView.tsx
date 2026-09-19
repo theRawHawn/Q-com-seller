@@ -60,7 +60,7 @@ export const ReturnsView: React.FC<ReturnsViewProps> = ({ onSelectOrder }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { showToast } = useToast();
-  const { refreshOrders } = useStore();
+  const { refreshOrders, playStatusSound } = useStore();
 
   const loadReturns = async () => {
     try {
@@ -124,6 +124,7 @@ export const ReturnsView: React.FC<ReturnsViewProps> = ({ onSelectOrder }) => {
       setReturns(prev => prev.map(r => (r.id === returnId ? res.data : r)));
       if (selectedReturn?.id === returnId) setSelectedReturn(res.data);
       refreshOrders();
+      playStatusSound('packed');
       showToast('Return Restocked', `Items verified and restocked to shelf. Refund initiated.`, 'success');
       setIsDetailOpen(false);
     } catch (err: any) {
@@ -139,6 +140,7 @@ export const ReturnsView: React.FC<ReturnsViewProps> = ({ onSelectOrder }) => {
       const res = await returnsService.approveAndWriteOff(returnId);
       setReturns(prev => prev.map(r => (r.id === returnId ? res.data : r)));
       if (selectedReturn?.id === returnId) setSelectedReturn(res.data);
+      playStatusSound('return_alert');
       showToast('Refund Approved', `Return marked as written off/damaged. Refund processed.`, 'info');
       setIsDetailOpen(false);
     } catch (err: any) {
@@ -162,6 +164,7 @@ export const ReturnsView: React.FC<ReturnsViewProps> = ({ onSelectOrder }) => {
       const res = await returnsService.rejectReturn(selectedReturn.id, rejectReason.trim());
       setReturns(prev => prev.map(r => (r.id === selectedReturn.id ? res.data : r)));
       setSelectedReturn(res.data);
+      playStatusSound('cancelled');
       showToast('Return Rejected', `Return #${res.data.returnNumber} was rejected.`, 'warning');
       setIsRejectModalOpen(false);
       setIsDetailOpen(false);

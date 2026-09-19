@@ -6,6 +6,8 @@ import { notificationService } from '../services/notificationService';
 import { returnsService } from '../services/returnsService';
 import { useToast } from './ToastContext';
 import { useAuth } from './AuthContext';
+import { soundService, SoundKey } from '../utils/soundService';
+import { StatusSoundsModal } from '../components/navigation/StatusSoundsModal';
 
 interface StoreContextType {
   orders: SellerOrder[];
@@ -22,9 +24,15 @@ interface StoreContextType {
   notifications: SellerNotification[];
   soundAlertsEnabled: boolean;
   toggleSoundAlerts: () => void;
+  playStatusSound: (key: SoundKey) => void;
+  openSoundsModal: () => void;
+  isSoundsModalOpen: boolean;
+  setIsSoundsModalOpen: (open: boolean) => void;
   acceptOrder: (orderId: string) => Promise<boolean>;
   markOrderReady: (orderId: string) => Promise<boolean>;
   markOrderHandedOver: (orderId: string) => Promise<boolean>;
+  markOrderArriving: (orderId: string) => Promise<boolean>;
+  markOrderDelivered: (orderId: string) => Promise<boolean>;
   toggleItemPacked: (orderId: string, productId: string, isPacked: boolean) => Promise<void>;
   rejectOrder: (orderId: string, reason: string) => Promise<boolean>;
   simulateIncomingOrder: () => Promise<void>;
@@ -43,29 +51,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
   const [lowStockCount, setLowStockCount] = useState(2);
   const [outOfStockCount, setOutOfStockCount] = useState(2);
-  const [soundAlertsEnabled, setSoundAlertsEnabled] = useState(true);
+  const [isSoundsModalOpen, setIsSoundsModalOpen] = useState(false);
+  // Sounds are mandatory across the QCOM Seller Hub — no option to disable
+  const soundAlertsEnabled = true;
   const { showToast } = useToast();
   const { currentStore } = useAuth();
 
-  const playChime = useCallback(() => {
-    if (!soundAlertsEnabled) return;
-    try {
-      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
-      osc.frequency.exponentialRampToValueAtTime(1320, audioCtx.currentTime + 0.15); // E6
-      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.35);
-    } catch {
-      // Audio autoplay policy fallback
-    }
-  }, [soundAlertsEnabled]);
+  const playStatusSound = useCallback((key: SoundKey) => {
+    soundService.play(key);
+  }, []);
+
+  const openSoundsModal = useCallback(() => {
+    setIsSoundsModalOpen(true);
+  }, []);
 
   const refreshOrders = useCallback(async () => {
     try {
@@ -127,7 +125,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const res = await orderService.acceptOrder(orderId);
       setOrders(prev => prev.map(o => (o.id === orderId ? res.data : o)));
-      showToast('Order Accepted', `Order #${res.data.orderNumber} moved to Picking.`, 'success');
+      soundService.play('picking');
+      showToast('Order Accepted · SLA Started', `Order #${res.data.orderNumber} moved to Picking. Standard 3m SLA timer is running.`, 'success');
       return true;
     } catch (err: any) {
       showToast('Action Failed', err.message, 'error');
@@ -139,6 +138,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const res = await orderService.markOrderReady(orderId);
       setOrders(prev => prev.map(o => (o.id === orderId ? res.data : o)));
+      soundService.play('packed');
       showToast('Ready for Handover', `Order #${res.data.orderNumber} is packed. Rider notified!`, 'success');
       return true;
     } catch (err: any) {
@@ -151,7 +151,34 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const res = await orderService.markOrderHandedOver(orderId);
       setOrders(prev => prev.map(o => (o.id === orderId ? res.data : o)));
+      soundService.play('out_for_delivery');
       showToast('Handover Confirmed', `Order #${res.data.orderNumber} dispatched with EV Courier.`, 'info');
+      return true;
+    } catch (err: any) {
+      showToast('Action Failed', err.message, 'error');
+      return false;
+    }
+  };
+
+  const markOrderArriving = async (orderId: string): Promise<boolean> => {
+    try {
+      const res = await orderService.markOrderArriving(orderId);
+      setOrders(prev => prev.map(o => (o.id === orderId ? res.data : o)));
+      soundService.play('arriving');
+      showToast('Courier Arriving', `Rider is arriving at job-site for order #${res.data.orderNumber}.`, 'info');
+      return true;
+    } catch (err: any) {
+      showToast('Action Failed', err.message, 'error');
+      return false;
+    }
+  };
+
+  const markOrderDelivered = async (orderId: string): Promise<boolean> => {
+    try {
+      const res = await orderService.markOrderDelivered(orderId);
+      setOrders(prev => prev.map(o => (o.id === orderId ? res.data : o)));
+      soundService.play('delivered');
+      showToast('Delivered Successfully', `Order #${res.data.orderNumber} marked as completed!`, 'success');
       return true;
     } catch (err: any) {
       showToast('Action Failed', err.message, 'error');
@@ -163,6 +190,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const res = await orderService.toggleItemPacked(orderId, productId, isPacked);
       setOrders(prev => prev.map(o => (o.id === orderId ? res.data : o)));
+      if (isPacked) {
+        soundService.play('item_packed');
+      }
     } catch (err: any) {
       showToast('Item Check Error', err.message, 'error');
     }
@@ -172,6 +202,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const res = await orderService.rejectOrder(orderId, reason);
       setOrders(prev => prev.map(o => (o.id === orderId ? res.data : o)));
+      soundService.play('cancelled');
       showToast('Order Rejected', `Order #${res.data.orderNumber} was declined.`, 'warning');
       return true;
     } catch (err: any) {
@@ -184,7 +215,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const res = await orderService.createSimulatedOrder();
       setOrders(prev => [res.data, ...prev]);
-      playChime();
+      soundService.play('placed');
       showToast('🔔 New Order Arrived!', `Order #${res.data.orderNumber} · ₹${res.data.total.toFixed(0)}`, 'warning');
 
       // Also add to notification center
@@ -217,8 +248,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const toggleSoundAlerts = () => {
-    setSoundAlertsEnabled(prev => !prev);
-    showToast('Sound Alerts', !soundAlertsEnabled ? 'Order audio chime enabled.' : 'Audio chime muted.', 'info');
+    setIsSoundsModalOpen(true);
+    showToast('Mandatory Audio Alerts', 'Audio chimes are mandatory for rapid fulfillment and cannot be disabled.', 'info');
   };
 
   const updateProductStock = async (productId: string, newStock: number) => {
@@ -251,9 +282,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         notifications,
         soundAlertsEnabled,
         toggleSoundAlerts,
+        playStatusSound,
+        openSoundsModal,
+        isSoundsModalOpen,
+        setIsSoundsModalOpen,
         acceptOrder,
         markOrderReady,
         markOrderHandedOver,
+        markOrderArriving,
+        markOrderDelivered,
         toggleItemPacked,
         rejectOrder,
         simulateIncomingOrder,
@@ -264,6 +301,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }}
     >
       {children}
+      <StatusSoundsModal
+        isOpen={isSoundsModalOpen}
+        onClose={() => setIsSoundsModalOpen(false)}
+      />
     </StoreContext.Provider>
   );
 };

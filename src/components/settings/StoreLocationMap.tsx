@@ -244,7 +244,7 @@ export const StoreLocationMap: React.FC<StoreLocationMapProps> = ({
                 if (searchResults.length > 0) setShowDropdown(true);
               }}
               placeholder="Search area, landmark, pincode, or street name..."
-              className="w-full text-xs pl-8 pr-8 py-2 rounded-lg border border-slate-200 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 bg-white font-medium text-slate-900 transition-colors shadow-2xs"
+              className="w-full text-xs pl-8 pr-8 py-2 rounded-lg border border-slate-200 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 bg-white text-slate-900 transition-colors shadow-2xs"
             />
             {isSearching ? (
               <Loader2 className="w-3.5 h-3.5 text-emerald-700 animate-spin absolute right-3 top-1/2 -translate-y-1/2" />
@@ -331,7 +331,7 @@ export const StoreLocationMap: React.FC<StoreLocationMapProps> = ({
             <Compass className="w-3.5 h-3.5 text-emerald-700" />
             Drag pin or click map to adjust store entrance
           </span>
-          <span className="font-mono text-[10px] text-slate-500 hidden sm:inline-block">
+          <span className="text-[10px] text-slate-500 tabular-nums hidden sm:inline-block">
             {position[0]}, {position[1]}
           </span>
         </div>
@@ -341,15 +341,15 @@ export const StoreLocationMap: React.FC<StoreLocationMapProps> = ({
       <div className="grid grid-cols-2 gap-2.5 text-xs">
         <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200/90 flex items-center justify-between">
           <div>
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block">Latitude</span>
-            <span className="font-mono font-bold text-slate-900 text-xs sm:text-sm">{position[0]}</span>
+            <span className="text-xs text-slate-500 font-semibold block">Latitude</span>
+            <span className="font-bold text-slate-900 text-xs sm:text-sm tabular-nums">{position[0]}</span>
           </div>
           <MapPin className="w-4 h-4 text-emerald-700" />
         </div>
         <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200/90 flex items-center justify-between">
           <div>
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 block">Longitude</span>
-            <span className="font-mono font-bold text-slate-900 text-xs sm:text-sm">{position[1]}</span>
+            <span className="text-xs text-slate-500 font-semibold block">Longitude</span>
+            <span className="font-bold text-slate-900 text-xs sm:text-sm tabular-nums">{position[1]}</span>
           </div>
           <MapPin className="w-4 h-4 text-emerald-700" />
         </div>

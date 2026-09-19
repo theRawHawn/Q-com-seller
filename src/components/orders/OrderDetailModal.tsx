@@ -21,6 +21,7 @@ import {
   PhoneForwarded,
   SlidersHorizontal,
   AlertTriangle,
+  Navigation,
 } from 'lucide-react';
 import { OrderStatusBadge } from '../common/StatusBadge';
 import { Button } from '../common/Button';
@@ -41,6 +42,8 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
     acceptOrder,
     markOrderReady,
     markOrderHandedOver,
+    markOrderArriving,
+    markOrderDelivered,
     toggleItemPacked,
     rejectOrder,
     updateProductStock,
@@ -155,7 +158,7 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
           {/* Top Operational Status & Persistent Primary Action Bar */}
           <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <OrderStatusBadge status={order.status} size="lg" />
+              <OrderStatusBadge status={order.status} order={order} size="lg" />
               <div>
                 <p className="text-xs text-slate-500 font-medium">Fulfillment Status</p>
                 <p className="text-sm font-bold text-slate-900">
@@ -213,6 +216,44 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
                 >
                   <Truck className="w-4 h-4 mr-1.5" />
                   <span>Hand Over to Rider</span>
+                </Button>
+              )}
+
+              {order.status === 'out_for_delivery' && (
+                <Button
+                  variant="secondary"
+                  size="md"
+                  isLoading={isProcessing}
+                  onClick={async () => {
+                    setIsProcessing(true);
+                    try {
+                      await markOrderArriving(order.id);
+                    } finally {
+                      setIsProcessing(false);
+                    }
+                  }}
+                >
+                  <Navigation className="w-4 h-4 mr-1.5 text-sky-600" />
+                  <span>Rider Arriving</span>
+                </Button>
+              )}
+
+              {order.status === 'arriving' && (
+                <Button
+                  variant="primary"
+                  size="md"
+                  isLoading={isProcessing}
+                  onClick={async () => {
+                    setIsProcessing(true);
+                    try {
+                      await markOrderDelivered(order.id);
+                    } finally {
+                      setIsProcessing(false);
+                    }
+                  }}
+                >
+                  <CheckCircle2 className="w-4 h-4 mr-1.5 text-emerald-300" />
+                  <span>Confirm Delivered</span>
                 </Button>
               )}
 

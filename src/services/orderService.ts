@@ -80,6 +80,7 @@ class OrderService {
       ...order,
       status: 'picking',
       preparationStartTime: new Date().toISOString(),
+      slaTargetMinutes: order.slaTargetMinutes || 3,
     };
 
     this.orders[orderIndex] = updatedOrder;
@@ -166,6 +167,53 @@ class OrderService {
       success: true,
       data: updatedOrder,
       message: `Order #${order.orderNumber} handed over to rider ${order.rider?.name || 'EV Courier'}.`,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  async markOrderArriving(orderId: string): Promise<ApiResponse<SellerOrder>> {
+    await simulateDelay(300);
+    const orderIndex = this.orders.findIndex(o => o.id === orderId || o.orderNumber === orderId);
+    if (orderIndex === -1) {
+      throw new Error(`Order #${orderId} was not found.`);
+    }
+
+    const order = this.orders[orderIndex];
+    const updatedOrder: SellerOrder = {
+      ...order,
+      status: 'arriving',
+    };
+
+    this.orders[orderIndex] = updatedOrder;
+
+    return {
+      success: true,
+      data: updatedOrder,
+      message: `Rider ${order.rider?.name || 'EV Courier'} is arriving at customer destination for order #${order.orderNumber}.`,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  async markOrderDelivered(orderId: string): Promise<ApiResponse<SellerOrder>> {
+    await simulateDelay(300);
+    const orderIndex = this.orders.findIndex(o => o.id === orderId || o.orderNumber === orderId);
+    if (orderIndex === -1) {
+      throw new Error(`Order #${orderId} was not found.`);
+    }
+
+    const order = this.orders[orderIndex];
+    const updatedOrder: SellerOrder = {
+      ...order,
+      status: 'delivered',
+      deliveredAt: new Date().toISOString(),
+    };
+
+    this.orders[orderIndex] = updatedOrder;
+
+    return {
+      success: true,
+      data: updatedOrder,
+      message: `Order #${order.orderNumber} delivered successfully to customer!`,
       timestamp: new Date().toISOString(),
     };
   }

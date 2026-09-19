@@ -4,7 +4,6 @@ import { useStore } from '../../context/StoreContext';
 import {
   Menu,
   Volume2,
-  VolumeX,
   Bell,
   Zap,
   CheckCircle2,
@@ -42,8 +41,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
   const { currentStore, availableStores, switchStore } = useAuth();
   const {
     unreadNotifCount,
-    soundAlertsEnabled,
-    toggleSoundAlerts,
+    openSoundsModal,
     simulateIncomingOrder,
     refreshOrders,
     isLoadingOrders,
@@ -108,22 +106,16 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
             )}
           </button>
 
-          {/* Audio Chime Toggle */}
+          {/* Mandatory Status Sounds Catalog / Preview */}
           <button
-            onClick={toggleSoundAlerts}
-            className={`w-9 h-9 flex items-center justify-center rounded-lg border transition-colors ${
-              soundAlertsEnabled
-                ? 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                : 'bg-slate-100 text-slate-400 border-slate-200 hover:bg-slate-200'
-            }`}
-            title={soundAlertsEnabled ? 'Sound alerts active' : 'Sound alerts muted'}
-            aria-label="Toggle sound alerts"
+            type="button"
+            onClick={openSoundsModal}
+            className="h-9 px-2.5 flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 transition-colors cursor-pointer"
+            title="Mandatory Audio Alerts • Click to listen to sounds for each status"
+            aria-label="Mandatory order audio alerts"
           >
-            {soundAlertsEnabled ? (
-              <Volume2 className="w-4 h-4 text-emerald-700" />
-            ) : (
-              <VolumeX className="w-4 h-4" />
-            )}
+            <Volume2 className="w-4 h-4 text-emerald-700" />
+            <span className="hidden xl:inline text-xs font-semibold text-slate-800">Status Sounds</span>
           </button>
 
           {/* Refresh Orders */}

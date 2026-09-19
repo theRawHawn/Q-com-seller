@@ -7,7 +7,6 @@ import {
   Settings,
   Store,
   Volume2,
-  VolumeX,
   Zap,
   LogOut,
   ChevronRight,
@@ -29,7 +28,7 @@ export const MobileMoreMenu: React.FC<MobileMoreMenuProps> = ({
   onNavigateTab,
 }) => {
   const { currentStore, logout } = useAuth();
-  const { soundAlertsEnabled, toggleSoundAlerts, simulateIncomingOrder } = useStore();
+  const { openSoundsModal, simulateIncomingOrder } = useStore();
 
   const handleSelect = (tab: string) => {
     onNavigateTab(tab);
@@ -95,17 +94,15 @@ export const MobileMoreMenu: React.FC<MobileMoreMenuProps> = ({
         {/* Controls: Audio & Simulation */}
         <div className="grid grid-cols-2 gap-2 pt-2">
           <button
+            type="button"
             onClick={() => {
-              toggleSoundAlerts();
+              onClose();
+              openSoundsModal();
             }}
-            className="p-3 rounded-xl border border-slate-200 flex items-center gap-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            className="p-3 rounded-xl border border-slate-200 flex items-center gap-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
           >
-            {soundAlertsEnabled ? (
-              <Volume2 className="w-4 h-4 text-emerald-700" />
-            ) : (
-              <VolumeX className="w-4 h-4 text-slate-400" />
-            )}
-            <span>{soundAlertsEnabled ? 'Sound On' : 'Sound Muted'}</span>
+            <Volume2 className="w-4 h-4 text-emerald-700" />
+            <span>Status Sounds</span>
           </button>
 
           <button

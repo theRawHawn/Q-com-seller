@@ -205,7 +205,7 @@ export const OrderList: React.FC<OrderListProps> = ({
                 {/* Order Header & Items Summary */}
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                    <OrderStatusBadge status={order.status} size="md" />
+                    <OrderStatusBadge status={order.status} order={order} size="md" />
                     <span className="font-bold text-sm tabular-nums text-slate-900">
                       #{order.orderNumber}
                     </span>

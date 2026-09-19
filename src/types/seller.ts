@@ -24,6 +24,113 @@ export interface BankAccountDetails {
   ifsc: string;
   bankName: string;
   accountHolderName: string;
+  accountType?: 'CURRENT' | 'SAVINGS';
+  branchName?: string;
+  isVerified?: boolean;
+  verifiedAt?: string;
+}
+
+export type UserRole = 'STORE_OWNER' | 'STORE_MANAGER' | 'STAFF_PACKER';
+
+export type PermissionKey =
+  | 'orders.view'
+  | 'orders.accept_pack'
+  | 'orders.rider_handover'
+  | 'orders.cancel_reject'
+  | 'catalog.view'
+  | 'catalog.stock_update'
+  | 'catalog.price_edit'
+  | 'catalog.add_product'
+  | 'inventory.write_off'
+  | 'finance.view_earnings'
+  | 'finance.manage_bank'
+  | 'admin.store_profile'
+  | 'admin.rbac_manage'
+  | 'admin.fraud_controls';
+
+export interface PermissionDefinition {
+  key: PermissionKey;
+  label: string;
+  category: 'Orders & Dispatch' | 'Inventory & Pricing' | 'Finance & Payouts' | 'Store Admin & Security';
+  description: string;
+  ownerOnly?: boolean;
+}
+
+export interface StoreStaffMember {
+  id: string;
+  name: string;
+  phone: string;
+  email?: string;
+  role: UserRole;
+  status: 'ACTIVE' | 'INACTIVE';
+  joinedDate: string;
+  lastActive?: string;
+}
+
+export interface StoreUser {
+  id: string;
+  name: string;
+  phone: string;
+  role: UserRole;
+  avatarUrl?: string;
+}
+
+export interface BankUpdateRequest {
+  id: string;
+  storeId: string;
+  submittedAt: string;
+  submittedBy: {
+    userId: string;
+    name: string;
+    role: UserRole;
+    phone: string;
+  };
+  currentBank: BankAccountDetails;
+  requestedBank: {
+    accountNumber: string;
+    ifsc: string;
+    bankName: string;
+    accountHolderName: string;
+    accountType: 'CURRENT' | 'SAVINGS';
+    branchName?: string;
+  };
+  reason: string;
+  documentType: 'CANCELLED_CHEQUE' | 'BANK_PASSBOOK' | 'BANK_STATEMENT';
+  documentFileName: string;
+  status: 'PENDING_VERIFICATION' | 'APPROVED' | 'REJECTED';
+  coolingPeriodEndsAt: string; // ISO string 24h from submission
+  verificationNotes?: string;
+  pennyDropStatus?: 'PENDING' | 'SUCCESSFUL' | 'FAILED';
+  rejectionReason?: string;
+}
+
+export interface FraudSecuritySettings {
+  // 1. Rider Handover Security (Swiggy/Blinkit style)
+  riderHandoverOtpRequired: boolean;
+  riderHandoverMinAmount: number; // e.g. 0 (all) or 500
+  mandatoryTamperSealLogging: boolean;
+  tamperSealMinOrderValue: number; // e.g. 1000
+  geofencedPickupEnforced: boolean; // 50m geofence radius check
+
+  // 2. Returns & Dispute Shield (Meesho/Flipkart/Amazon style)
+  returnDeliveryOtpRequired: boolean;
+  unboxingVideoMandatoryForHighValue: boolean;
+  highValueReturnThreshold: number; // e.g. 1000
+  highRiskCustomerCodBlock: boolean; // Auto-block COD/Trade Credit for high return/cancellation customers
+  mismatchDisputeWindowHours: number; // 48h to claim swapped/missing items
+
+  // 3. Account & Pricing Protection (Amazon Seller Central style)
+  payoutAccountLockEnabled: boolean; // Enforce Platform Verification & 24h cooling on bank changes
+  priceFloorProtectionEnabled: boolean; // Disallow accidental drops below 50% MRP
+  priceFloorPercentage: number; // 50%
+  bulkHoardingCapEnabled: boolean; // Max quantity per order for critical SKUs
+  bulkMaxUnitsPerOrder: number; // 10 units
+
+  // 4. Staff Roles & Action Logging
+  requireManagerPinForWriteOffs: boolean;
+  requireManagerPinForCancellations: boolean;
+  activeManagerPin: string; // "4821"
+  securityAuditLogging: boolean;
 }
 
 export interface VerificationDocuments {
@@ -68,6 +175,8 @@ export interface SellerStore {
   slaAdherencePercent: number;
   joinedDate: string;
   documents: VerificationDocuments;
+  fraudSettings?: FraudSecuritySettings;
+  pendingBankUpdateRequest?: BankUpdateRequest | null;
   operatingHours: {
     openTime: string; // e.g. "07:30"
     closeTime: string; // e.g. "21:30"
@@ -155,6 +264,7 @@ export interface SellerOrder {
   notes?: string[];
   preparationStartTime?: string;
   packedTime?: string;
+  slaTargetMinutes?: number;
 }
 
 export interface SellerProduct {

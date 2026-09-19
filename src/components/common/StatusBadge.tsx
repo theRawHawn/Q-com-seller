@@ -1,5 +1,5 @@
-import React from 'react';
-import { OrderStatus, ProductStockStatus, ReturnStatus } from '../../types/seller';
+import React, { useState, useEffect } from 'react';
+import { OrderStatus, ProductStockStatus, ReturnStatus, SellerOrder } from '../../types/seller';
 import {
   Clock,
   PackageCheck,
@@ -15,9 +15,29 @@ import {
 interface OrderBadgeProps {
   status: OrderStatus;
   size?: 'sm' | 'md' | 'lg';
+  order?: SellerOrder;
+  preparationStartTime?: string;
+  slaTargetMinutes?: number;
 }
 
-export const OrderStatusBadge: React.FC<OrderBadgeProps> = ({ status, size = 'md' }) => {
+export const OrderStatusBadge: React.FC<OrderBadgeProps> = ({
+  status,
+  size = 'md',
+  order,
+  preparationStartTime,
+  slaTargetMinutes,
+}) => {
+  const [, setTick] = useState(0);
+
+  // Live countdown tick for preparing orders
+  useEffect(() => {
+    if (status !== 'picking') return;
+    const interval = setInterval(() => {
+      setTick(t => t + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [status]);
+
   const sizeClasses = {
     sm: 'text-[11px] px-2 py-0.5 gap-1 font-medium',
     md: 'text-xs px-2.5 py-1 gap-1.5 font-medium',
@@ -35,16 +55,89 @@ export const OrderStatusBadge: React.FC<OrderBadgeProps> = ({ status, size = 'md
           <span>New Order</span>
         </span>
       );
-    case 'picking':
+    case 'picking': {
+      const startTime = order?.preparationStartTime || preparationStartTime || order?.placedAt;
+      const targetMins = order?.slaTargetMinutes || slaTargetMinutes || 3;
+
+      let timerStr: string | null = null;
+      let isBreached = false;
+      let isWarning = false;
+
+      if (startTime) {
+        const startMs = new Date(startTime).getTime();
+        const elapsedSecs = Math.max(0, Math.floor((Date.now() - startMs) / 1000));
+        const totalSecs = Math.round(targetMins * 60);
+        const remSecs = totalSecs - elapsedSecs;
+
+        if (remSecs < 0) {
+          isBreached = true;
+          const abs = Math.abs(remSecs);
+          const m = Math.floor(abs / 60);
+          const s = abs % 60;
+          timerStr = `+${m}:${s.toString().padStart(2, '0')}`;
+        } else {
+          if (remSecs <= 60) isWarning = true;
+          const m = Math.floor(remSecs / 60);
+          const s = remSecs % 60;
+          timerStr = `${m}:${s.toString().padStart(2, '0')}`;
+        }
+      }
+
+      if (isBreached) {
+        return (
+          <span
+            id={`badge-status-${status}`}
+            title={`SLA Breached by ${timerStr?.replace('+', '')} (Target: ${targetMins} mins)`}
+            className={`inline-flex items-center rounded-md bg-rose-50 text-rose-700 border border-rose-200 ${sizeClasses}`}
+          >
+            <Clock className="w-3 h-3 text-rose-600 animate-pulse" />
+            <span>Preparing</span>
+            {timerStr && (
+              <>
+                <span className="text-rose-300">•</span>
+                <span className="font-mono tabular-nums font-bold">{timerStr}</span>
+              </>
+            )}
+          </span>
+        );
+      }
+
+      if (isWarning) {
+        return (
+          <span
+            id={`badge-status-${status}`}
+            title={`Under 1 minute left on standard ${targetMins}m packing SLA`}
+            className={`inline-flex items-center rounded-md bg-amber-50 text-amber-800 border border-amber-300 ${sizeClasses}`}
+          >
+            <Clock className="w-3 h-3 text-amber-600 animate-pulse" />
+            <span>Preparing</span>
+            {timerStr && (
+              <>
+                <span className="text-amber-300">•</span>
+                <span className="font-mono tabular-nums font-bold">{timerStr}</span>
+              </>
+            )}
+          </span>
+        );
+      }
+
       return (
         <span
           id={`badge-status-${status}`}
+          title={`Standard Fulfillment SLA (${targetMins} mins)`}
           className={`inline-flex items-center rounded-md bg-blue-50 text-blue-700 border border-blue-200 ${sizeClasses}`}
         >
           <Clock className="w-3 h-3 text-blue-600" />
           <span>Preparing</span>
+          {timerStr && (
+            <>
+              <span className="text-blue-300">•</span>
+              <span className="font-mono tabular-nums font-semibold">{timerStr}</span>
+            </>
+          )}
         </span>
       );
+    }
     case 'packed':
       return (
         <span
