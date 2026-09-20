@@ -419,11 +419,11 @@ export const INITIAL_ORDERS: SellerOrder[] = [
     deliveryFee: 0,
     handlingFee: 15,
     total: 504.7,
-    sellerEarnings: 346.52, // subtotal (415) minus 15% commission (62.25) minus 1% TDS (4.15) minus 0.5% TCS (2.08)
+    sellerEarnings: 347.47, // subtotal (415) minus 15% comm (62.25) minus 1% TDS on taxable base (3.52) minus 0.5% TCS on taxable base (1.76)
     commissionAmount: 62.25,
     commissionRatePercent: 15.0,
-    tdsAmount: 4.15,
-    tcsAmount: 2.08,
+    tdsAmount: 3.52,
+    tcsAmount: 1.76,
     items: [
       {
         productId: 'prod-01',
@@ -507,11 +507,11 @@ export const INITIAL_ORDERS: SellerOrder[] = [
     deliveryFee: 0,
     handlingFee: 15,
     total: 935.4,
-    sellerEarnings: 651.30,
+    sellerEarnings: 653.08,
     commissionAmount: 117.0,
     commissionRatePercent: 15.0,
-    tdsAmount: 7.80,
-    tcsAmount: 3.90,
+    tdsAmount: 6.61,
+    tcsAmount: 3.31,
     items: [
       {
         productId: 'prod-04',
@@ -610,11 +610,11 @@ export const INITIAL_ORDERS: SellerOrder[] = [
     deliveryFee: 0,
     handlingFee: 15,
     total: 317.08,
-    sellerEarnings: 213.76,
+    sellerEarnings: 214.35,
     commissionAmount: 38.40,
     commissionRatePercent: 15.0,
-    tdsAmount: 2.56,
-    tcsAmount: 1.28,
+    tdsAmount: 2.17,
+    tcsAmount: 1.08,
     items: [
       {
         productId: 'prod-07',
@@ -695,11 +695,11 @@ export const INITIAL_ORDERS: SellerOrder[] = [
     deliveryFee: 0,
     handlingFee: 15,
     total: 669.9,
-    sellerEarnings: 463.42,
+    sellerEarnings: 464.70,
     commissionAmount: 83.25,
     commissionRatePercent: 15.0,
-    tdsAmount: 5.55,
-    tcsAmount: 2.78,
+    tdsAmount: 4.70,
+    tcsAmount: 2.35,
     items: [
       {
         productId: 'prod-01',
@@ -761,11 +761,11 @@ export const INITIAL_ORDERS: SellerOrder[] = [
     deliveryFee: 0,
     handlingFee: 15,
     total: 1313,
-    sellerEarnings: 918.50,
+    sellerEarnings: 921.02,
     commissionAmount: 165.0,
     commissionRatePercent: 15.0,
-    tdsAmount: 11.00,
-    tcsAmount: 5.50,
+    tdsAmount: 9.32,
+    tcsAmount: 4.66,
     items: [
       {
         productId: 'prod-08',

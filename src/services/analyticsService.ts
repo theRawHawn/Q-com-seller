@@ -9,13 +9,13 @@ export function getSellerAnalyticsData(
   customEndDate = '2026-09-18'
 ): SellerAnalyticsMetrics {
   // Statutory Deductions:
-  // - TDS u/s 194-O (Income Tax): 1%
-  // - TCS under GST (Sec 52): 0.5% (0.25% CGST + 0.25% SGST)
-  // Total statutory tax deductions = 1.5%
+  // - TDS u/s 194-O (Income Tax): 1% on net taxable base (excluding 18% GST)
+  // - TCS under GST (Sec 52): 0.5% on net taxable base (excluding 18% GST)
   const computeStatutoryTaxes = (gross: number, commission: number) => {
-    const tds = +(gross * 0.01).toFixed(1); // 1%
-    const tcs = +(gross * 0.005).toFixed(1); // 0.5%
-    const totalTax = +(tds + tcs).toFixed(1); // 1.5%
+    const netTaxableBase = gross / 1.18;
+    const tds = +(netTaxableBase * 0.01).toFixed(1); // 1% on net taxable base
+    const tcs = +(netTaxableBase * 0.005).toFixed(1); // 0.5% on net taxable base
+    const totalTax = +(tds + tcs).toFixed(1);
     const netProfit = +(gross - commission).toFixed(1);
     const netPayoutAfterTdsTcs = +(gross - commission - totalTax).toFixed(1);
     return { tds, tcs, totalTax, netProfit, netPayoutAfterTdsTcs };

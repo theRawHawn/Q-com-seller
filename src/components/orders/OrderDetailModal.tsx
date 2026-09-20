@@ -498,48 +498,64 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
           </div>
 
           {/* Pricing & Net Seller Payout Breakdown */}
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs">
-            <div className="flex items-center justify-between font-bold text-slate-900 text-sm pb-1 border-b border-slate-200">
-              <span>Financial Settlement Breakdown</span>
-              <span className="font-semibold text-emerald-700">PAID via {order.paymentMethod}</span>
-            </div>
+          {(() => {
+            const taxableBase = order.items && order.items.length > 0
+              ? order.items.reduce((sum, item) => {
+                  const gstRate = item.gstRatePercent ?? 18;
+                  return sum + (item.price * item.quantity) / (1 + gstRate / 100);
+                }, 0)
+              : order.subtotal / 1.18;
+            const calculatedTds = order.tdsAmount ?? +(taxableBase * 0.01).toFixed(2);
+            const calculatedTcs = order.tcsAmount ?? +(taxableBase * 0.005).toFixed(2);
+            const finalTds = order.tdsAmount ?? calculatedTds;
+            const finalTcs = order.tcsAmount ?? calculatedTcs;
+            const netSettlement = Math.max(0, +(order.subtotal - order.commissionAmount - finalTds - finalTcs).toFixed(2));
 
-            <div className="flex justify-between text-slate-700 pt-1">
-              <span className="flex items-center gap-1 font-semibold">
-                <span>Items Subtotal:</span>
-                <span className="text-[10px] text-slate-400 font-normal">(Prices listed inclusive of GST)</span>
-              </span>
-              <span className="font-bold tabular-nums text-slate-900">₹{order.subtotal.toFixed(2)}</span>
-            </div>
+            return (
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs">
+                <div className="flex items-center justify-between font-bold text-slate-900 text-sm pb-1 border-b border-slate-200">
+                  <span>Financial Settlement Breakdown</span>
+                  <span className="font-semibold text-emerald-700">PAID via {order.paymentMethod}</span>
+                </div>
 
-            <div className="flex justify-between text-slate-500 pt-1 border-t border-slate-200/60">
-              <span title="Fixed platform fee managed via QCOM Central Admin Panel">
-                Platform Commission ({order.commissionRatePercent}% Fixed):
-              </span>
-              <span className="font-bold tabular-nums text-rose-600">-₹{order.commissionAmount.toFixed(2)}</span>
-            </div>
+                <div className="flex justify-between text-slate-700 pt-1">
+                  <span className="flex items-center gap-1 font-semibold">
+                    <span>Items Subtotal:</span>
+                    <span className="text-[10px] text-slate-400 font-normal">(Prices listed inclusive of GST)</span>
+                  </span>
+                  <span className="font-bold tabular-nums text-slate-900">₹{order.subtotal.toFixed(2)}</span>
+                </div>
 
-            <div className="flex justify-between text-slate-500">
-              <span title="Govt Income Tax TDS under Section 194O (1.0% on Gross Sale Value)">
-                Govt TDS u/s 194O (1%):
-              </span>
-              <span className="font-bold tabular-nums text-rose-600">-₹{order.tdsAmount.toFixed(2)}</span>
-            </div>
+                <div className="flex justify-between text-slate-500 pt-1 border-t border-slate-200/60">
+                  <span title="Fixed platform fee managed via QCOM Central Admin Panel">
+                    Platform Commission ({order.commissionRatePercent}% Fixed):
+                  </span>
+                  <span className="font-bold tabular-nums text-rose-600">-₹{order.commissionAmount.toFixed(2)}</span>
+                </div>
 
-            <div className="flex justify-between text-slate-500">
-              <span title="Govt TCS under GST Section 52 (0.5% on Gross Sale Value)">
-                Govt TCS under GST (0.5%):
-              </span>
-              <span className="font-bold tabular-nums text-rose-600">-₹{(order.tcsAmount ?? +(order.subtotal * 0.005).toFixed(2)).toFixed(2)}</span>
-            </div>
+                <div className="flex justify-between text-slate-500">
+                  <span title={`Govt Income Tax TDS under Section 194O (1.0% on Net Taxable Item Base ₹${taxableBase.toFixed(2)})`}>
+                    Govt TDS u/s 194O (1% on Taxable Base):
+                  </span>
+                  <span className="font-bold tabular-nums text-rose-600">-₹{finalTds.toFixed(2)}</span>
+                </div>
 
-            <div className="flex justify-between font-bold text-slate-900 text-sm pt-2 border-t border-slate-300">
-              <span className="text-emerald-800">Net Seller Settlement:</span>
-              <span className="text-base font-extrabold tabular-nums tracking-tight text-emerald-800">
-                ₹{Math.max(0, +(order.subtotal - order.commissionAmount - order.tdsAmount - (order.tcsAmount ?? +(order.subtotal * 0.005).toFixed(2))).toFixed(2)).toFixed(2)}
-              </span>
-            </div>
-          </div>
+                <div className="flex justify-between text-slate-500">
+                  <span title={`Govt TCS under GST Section 52 (0.5% on Net Taxable Item Base ₹${taxableBase.toFixed(2)})`}>
+                    Govt TCS under GST (0.5% on Taxable Base):
+                  </span>
+                  <span className="font-bold tabular-nums text-rose-600">-₹{finalTcs.toFixed(2)}</span>
+                </div>
+
+                <div className="flex justify-between font-bold text-slate-900 text-sm pt-2 border-t border-slate-300">
+                  <span className="text-emerald-800">Net Seller Settlement:</span>
+                  <span className="text-base font-extrabold tabular-nums tracking-tight text-emerald-800">
+                    ₹{netSettlement.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </Modal>
 

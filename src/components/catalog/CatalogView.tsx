@@ -331,9 +331,10 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
     const gstOnCommission = +(platformCommission * 0.18).toFixed(2);
     const totalPlatformFee = +(platformCommission + gstOnCommission).toFixed(2);
 
-    // Statutory Deductions (1% TDS + 0.5% TCS = 1.5% on gross transaction)
-    const tds = +(finalListingPrice * 0.01).toFixed(2);
-    const tcs = +(finalListingPrice * 0.005).toFixed(2);
+    // Statutory Deductions (1% TDS + 0.5% TCS on net taxable item base excluding GST)
+    const netTaxableBase = +(finalListingPrice / 1.18).toFixed(2);
+    const tds = +(netTaxableBase * 0.01).toFixed(2);
+    const tcs = +(netTaxableBase * 0.005).toFixed(2);
     const totalTax = +(tds + tcs).toFixed(2);
 
     // Net Seller Revenue per unit
@@ -396,9 +397,10 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
     const gstOnCommission = +(platformCommission * 0.18).toFixed(2);
     const totalPlatformFee = +(platformCommission + gstOnCommission).toFixed(2);
 
-    // Statutory Deductions (1% TDS + 0.5% TCS = 1.5% on gross transaction)
-    const tds = +(finalListingPrice * 0.01).toFixed(2);
-    const tcs = +(finalListingPrice * 0.005).toFixed(2);
+    // Statutory Deductions (1% TDS + 0.5% TCS on net taxable item base excluding GST)
+    const netTaxableBase = +(finalListingPrice / 1.18).toFixed(2);
+    const tds = +(netTaxableBase * 0.01).toFixed(2);
+    const tcs = +(netTaxableBase * 0.005).toFixed(2);
     const totalTax = +(tds + tcs).toFixed(2);
 
     // Net Seller Revenue per unit
@@ -917,7 +919,7 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
                   <div className="flex items-center justify-between">
                     <span className="flex items-center gap-1">
                       <span>Statutory Tax Deductions:</span>
-                      <span className="text-[10px] text-amber-700">1% TDS (₹{editPriceCalculations.tds.toFixed(2)}) + 0.5% TCS (₹{editPriceCalculations.tcs.toFixed(2)})</span>
+                      <span className="text-[10px] text-amber-700">1% TDS (₹{editPriceCalculations.tds.toFixed(2)}) + 0.5% TCS (₹{editPriceCalculations.tcs.toFixed(2)}) on Net Base</span>
                     </span>
                     <span className="font-mono text-amber-800">
                       -₹{editPriceCalculations.totalTax.toFixed(2)}
@@ -1255,7 +1257,7 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1">
                     <span>Statutory Tax Deductions:</span>
-                    <span className="text-[10px] text-amber-700">1% TDS (₹{addPriceCalculations.tds.toFixed(2)}) + 0.5% TCS (₹{addPriceCalculations.tcs.toFixed(2)})</span>
+                    <span className="text-[10px] text-amber-700">1% TDS (₹{addPriceCalculations.tds.toFixed(2)}) + 0.5% TCS (₹{addPriceCalculations.tcs.toFixed(2)}) on Net Base</span>
                   </span>
                   <span className="font-mono text-amber-800">
                     -₹{addPriceCalculations.totalTax.toFixed(2)}

@@ -133,9 +133,9 @@ export const EarningsView: React.FC = () => {
               </span>
             </div>
             <p className="text-xl font-bold tabular-nums text-slate-900 mt-2">
-              ₹{(earnings?.monthSales ? +(earnings.monthSales * 0.01).toFixed(1) : 642).toLocaleString()}
+              ₹{(earnings?.monthSales ? +((earnings.monthSales / 1.18) * 0.01).toFixed(1) : 544.1).toLocaleString()}
             </p>
-            <p className="text-[11px] text-slate-500 mt-1">Reflected in Form 26AS for tax credit claiming</p>
+            <p className="text-[11px] text-slate-500 mt-1">Calculated on net taxable base (excl GST), Form 26AS credit</p>
           </div>
 
           <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-2xs">
@@ -146,9 +146,9 @@ export const EarningsView: React.FC = () => {
               </span>
             </div>
             <p className="text-xl font-bold tabular-nums text-slate-900 mt-2">
-              ₹{(earnings?.monthSales ? +(earnings.monthSales * 0.005).toFixed(1) : 321.0).toLocaleString()}
+              ₹{(earnings?.monthSales ? +((earnings.monthSales / 1.18) * 0.005).toFixed(1) : 272.0).toLocaleString()}
             </p>
-            <p className="text-[11px] text-slate-500 mt-1">0.25% CGST + 0.25% SGST credited to GST portal</p>
+            <p className="text-[11px] text-slate-500 mt-1">0.25% CGST + 0.25% SGST on net taxable base</p>
           </div>
 
           <div className="p-4 rounded-xl bg-emerald-50/50 border border-emerald-200/80 shadow-2xs">

@@ -257,11 +257,11 @@ class OrderService {
       deliveryFee: 0,
       handlingFee: 15,
       total: 404.4,
-      sellerEarnings: 275.55,
+      sellerEarnings: 276.30,
       commissionAmount: 49.5,
       commissionRatePercent: 15.0,
-      tdsAmount: 3.30,
-      tcsAmount: 1.65,
+      tdsAmount: 2.80,
+      tcsAmount: 1.40,
       items: [
         {
           productId: 'prod-04',
